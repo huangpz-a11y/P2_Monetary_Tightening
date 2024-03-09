@@ -225,19 +225,136 @@ treasury_and_other_GSIB # total treasury and other all GSIB banks
 treasury_and_other_large_ex_GSIB # total treasury and other for large banks excl. GSIB
 treasury_and_other_small # total treasury and other for small banks
 
+##Mark-to-market
 
+#Treasury Prices
+combined_index_df = pd.read_excel('../data/manual/combined_index_df.xlsx')
+treasury_prices = combined_index_df[['date', 'iShares 0-1', 'iShares 1-3', 'sp 3-5', 'iShares 7-10', 'iShares 10-20', 'iShares 20+']]
+treasury_prices = treasury_prices.set_index('date')
+treasury_prices = treasury_prices.loc['2021-12-31':'2023-03-31']
 
+#SP Tresasury Bond Index
+df_SP_Treasury_bond_index = pd.read_excel(r'../data/manual/PerformanceGraphExport.xlsx')
+df_SP_Treasury_bond_index['date'] = df_SP_Treasury_bond_index['date'].dt.strftime('%Y-%m-%d')
+df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.set_index('date')
+df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.loc['2021-12-31':'2023-03-31']
 
+#iShare MBS ETF
+df_iShare_MBS_ETF = pd.read_csv(r'../data/manual/MBB.csv')
+df_iShare_MBS_ETF = df_iShare_MBS_ETF[['Date', 'Adj Close']]
+df_iShare_MBS_ETF.set_index('Date', inplace = True)
+df_iShare_MBS_ETF.index.rename('date', inplace = True)
 
+#RMBS Multiplier
+def RMBs_Multiplier(df_SP_Treasury_bond_index, df_iShare_MBS_ETF):
+    upper_treasury = df_SP_Treasury_bond_index.loc['2023-03-31', 'S&P U.S. Treasury Bond Index']
+    lower_treasury = df_SP_Treasury_bond_index.loc['2022-03-31', 'S&P U.S. Treasury Bond Index']
 
+    upper_MBS = df_iShare_MBS_ETF.loc['2023-03-31', 'Adj Close']
+    lower_MBS = df_iShare_MBS_ETF.loc['2022-03-31', 'Adj Close']
 
+    MBS_change = (upper_MBS / lower_MBS) - 1
+    treasury_change = (upper_treasury / lower_treasury) - 1
+    multiplier = MBS_change / treasury_change
 
+    return multiplier
 
+RMBS_Multiplier = RMBs_Multiplier(df_SP_Treasury_bond_index, df_iShare_MBS_ETF)
+RMBS_Multiplier
 
+#Function to compute losses for all banks
+def compute_all_bank_loss(df_RMBS_Final, df_loans_first_lien_domestic, df_treasury_and_others, df_other_loan,
+                          treasury_prices, RMBS_multiplier):
+    # Consolidate '<3m' and '3m-1y' into '<1y' for all DataFrames
+    for df in [df_RMBS_Final, df_loans_first_lien_domestic, df_treasury_and_others, df_other_loan]:
+        df['<1y'] = df['<3m'] + df['3m-1y']
 
+    # Calculate price changes for Treasury for each time bucket
+    # price_change = {
+    # '<1y': treasury_prices.loc['2023-03-31', 'iShares 0-1'] - treasury_prices.loc['2022-03-31', 'iShares 0-1'],
+    # '1y-3y': treasury_prices.loc['2023-03-31', 'iShares 1-3'] - treasury_prices.loc['2022-03-31', 'iShares 1-3'],
+    # '3y-5y': treasury_prices.loc['2023-03-31', 'sp 3-5'] - treasury_prices.loc['2022-03-31', 'sp 3-5'],
+    # '7y-10y': treasury_prices.loc['2023-03-31', 'iShares 7-10'] - treasury_prices.loc['2022-03-31', 'iShares 7-10'],
+    # '10y-20y': treasury_prices.loc['2023-03-31', 'iShares 10-20'] - treasury_prices.loc['2022-03-31', 'iShares 10-20'],
+    # '>20y': treasury_prices.loc['2023-03-31', 'iShares 20+'] - treasury_prices.loc['2022-03-31', 'iShares 20+'],
+    # }
 
+    price_change = {
+        '<1y': treasury_prices.loc['2023-03-31', 'iShares 0-1'] / treasury_prices.loc['2022-03-31', 'iShares 0-1'] - 1,
+        '1y-3y': treasury_prices.loc['2023-03-31', 'iShares 1-3'] / treasury_prices.loc[
+            '2022-03-31', 'iShares 1-3'] - 1,
+        '3y-5y': treasury_prices.loc['2023-03-31', 'sp 3-5'] / treasury_prices.loc['2022-03-31', 'sp 3-5'] - 1,
+        '7y-10y': treasury_prices.loc['2023-03-31', 'iShares 7-10'] / treasury_prices.loc[
+            '2022-03-31', 'iShares 7-10'] - 1,
+        '10y-20y': treasury_prices.loc['2023-03-31', 'iShares 10-20'] / treasury_prices.loc[
+            '2022-03-31', 'iShares 10-20'] - 1,
+        '>20y': treasury_prices.loc['2023-03-31', 'iShares 20+'] / treasury_prices.loc['2022-03-31', 'iShares 20+'] - 1,
+    }
 
+    # Map the time buckets from Treasury to the corresponding buckets in the other DataFrames
+    bucket_mapping = {
+        '<1y': '<1y',
+        '1y-3y': '1y-3y',
+        '3y-5y': '3y-5y',
+        '7y-10y': '5y-15y',
+        '10y-20y': '>15y',
+        '>20y': '>15y'
+    }
 
+    # Function to compute the losses and calculate the median and sum of the losses
+    def calculate_bank_losses(df_RMBS_Final, df_loans_first_lien_domestic, df_treasury_and_others, df_other_loan,
+                              RMBS_multiplier, price_change, bucket_mapping):
+        # Create a new DataFrame to store the losses for each bank
+        bank_losses = pd.DataFrame(index=df_RMBS_Final['bank_name'])
 
+        # Calculate losses for each type of asset
+        for treasury_bucket, df_bucket in bucket_mapping.items():
+            bank_losses[f'{treasury_bucket}_rmbs_loss'] = RMBS_multiplier * df_RMBS_Final.set_index('bank_name')[
+                df_bucket] * price_change[treasury_bucket]
+            bank_losses[f'{treasury_bucket}_first_lien_loss'] = RMBS_multiplier * \
+                                                                df_loans_first_lien_domestic.set_index('bank_name')[
+                                                                    df_bucket] * price_change[treasury_bucket]
+            bank_losses[f'{treasury_bucket}_treasury_and_other_loss'] = df_treasury_and_others.set_index('bank_name')[
+                                                                            df_bucket] * price_change[treasury_bucket]
+            bank_losses[f'{treasury_bucket}_other_loans_loss'] = df_other_loan.set_index('bank_name')[df_bucket] * \
+                                                                 price_change[treasury_bucket]
 
+        # Sum the losses for each bank
+        bank_losses['total_loss'] = bank_losses.sum(axis=1)
 
+        # Calculate the median loss value among all banks
+        median_loss = bank_losses['total_loss'].median()
+
+        # Calculate the sum of the losses
+        sum_loss = bank_losses['total_loss'].sum()
+
+        # Return the median and sum of the losses
+        return median_loss, sum_loss
+
+    # Call the function with the required arguments
+    median_loss, sum_loss = calculate_bank_losses(RMBS_all, first_lien_all, treasury_and_others_all,
+                                                  other_loan_all, RMBS_multiplier, price_change, bucket_mapping)
+
+    print(f"Median Loss All Banks: {median_loss}")
+    print(f"Sum of Losses All Banks: {sum_loss}")
+
+    #Call function with for GSIB Banks
+    median_loss, sum_loss = calculate_bank_losses(RMBS_GSIB, first_lien_GSIB, treasury_and_other_GSIB,
+                                                  other_loan_GSIB, RMBS_multiplier, price_change, bucket_mapping)
+
+    print(f"Median Loss GSIB banks: {median_loss}")
+    print(f"Sum of Losses GSIB banks: {sum_loss}")
+
+    # Call function with for large non-GSIB Banks
+    median_loss, sum_loss = calculate_bank_losses(RMBS_large_ex_GSIB, first_lien_large_ex_GSIB, treasury_and_other_large_ex_GSIB,
+                                                  other_loan_large_ex_GSIB, RMBS_multiplier, price_change, bucket_mapping)
+
+    print(f"Median Loss Large Banks excl. GSIB: {median_loss}")
+    print(f"Sum of Losses Large Banks excl. GSIB: {sum_loss}")
+
+    # Call function with for small Banks
+    median_loss, sum_loss = calculate_bank_losses(RMBS_small, first_lien_small, treasury_and_other_small,
+                                                  other_loan_small, RMBS_multiplier, price_change, bucket_mapping)
+
+    print(f"Median Loss Small Banks: {median_loss}")
+    print(f"Sum of Losses Small Banks: {sum_loss}")
