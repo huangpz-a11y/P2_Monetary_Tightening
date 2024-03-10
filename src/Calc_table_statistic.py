@@ -487,6 +487,24 @@ def final_statistic_table(bank_losses_assets, uninsured_deposit_mm_asset, insure
     
     return final_stats
 
+def GSIB_bank_id():
+    GSIB = [852218, 480228, 476810, 413208, #JP Morgan, Bank of America, Citigroup, HSBC
+       2980209, 2182786, 541101, 655839, 1015560, 229913,#Barclays, Goldman Sachs, BNY Mellon, CCB COMMUNITY BANK, ICBC, Mizuho
+       1456501, 722777, 35301, 925411, 497404, 3212149, #Morgan Stanley, Santander, State Street, Sumitomo Mitsui, TD Bank, UBS
+       451965] #wells fargo
+    return GSIB
+
+def large_ex_GSIB_bank_id(large):
+    bank_id_large_ex_GSIB = []
+    for bank_id in df_asset_large_ex_GSIB['RSSD9001']:
+       bank_id_large_ex_GSIB.append(bank_id)
+    return bank_id_large_ex_GSIB
+
+def small_bank_id(small):
+    bank_id_small = []
+    for bank_id in df_asset_small['RSSD9001']:
+       bank_id_small.append(bank_id)
+
 if __name__ == '__main__':
 
 
@@ -520,5 +538,58 @@ if __name__ == '__main__':
     final_stats = final_statistic_table(bank_losses_assets, uninsured_deposit_mm_asset, insured_deposit_coverage)
     
     print(final_stats)
+
+    ##Total Assets
+
+    df_asset = df_asset #total assets all banks
+
+    GSIB = GSIB_bank_id() #list of GSIB bank IDs
+    df_asset_GSIB = df_asset[df_asset['rssd9001'].isin(GSIB)] #total assets all GSIB banks
+
+    df_asset_large_ex_GSIB = df_asset[(~df_asset['rssd9001'].isin(GSIB)) & (df_asset['rssd9001']>1384)] #total assets all large non-GSIB banks
+    large_ex_GSIB = large_ex_GSIB_bank_id(df_asset_large_ex_GSIB) #list of large non-GSIB bank IDs
+
+    df_asset_small = df_asset[(~df_asset['rssd9001'].isin(GSIB)) & (df_asset['rssd9001']<=1384)] #total asset all small banks 
+    small = small_bank_id(df_asset_small) #list of small bank IDs
+
+    ##RMBS
+
+    df_RMBS_Final = df_RMBS_Final #RMBS for all banks 
+
+    df_RMBS_GSIB = df_RMBS_Final[df_RMBS_Final['rssd9001'].isin(GSIB)] #RMBS for GSIB banks
+
+    df_RMBS_large_ex_GSIB = df_RMBS_Final[df_RMBS_Final['rssd9001'].isin(large_ex_GSIB)] #RMBS for large non-GSIB banks
+
+    df_RMBS_small = df_RMBS_Final[df_RMBS_Final['rssd9001'].isin(small)] #RMBS for small banks
+
+    ##Loans First Lien Domestic
+
+    df_loans_first_lien_domestic = df_loans_first_lien_domestic # loans first lien domestic for all banks
+    
+    df_loans_first_lien_domestic_GSIB = df_loans_first_lien_domestic[df_loans_first_lien_domestic['rssd9001'].isin(GSIB)] # loans first lien domestic for all GSIB banks
+
+    df_loans_first_lien_domestic_large_ex_GSIB = df_loans_first_lien_domestic[df_loans_first_lien_domestic['rssd9001'].isin(large_ex_GSIB)] # loans first lien domestic for all large non-GSIB banks
+
+    df_loans_first_lien_domestic_small = df_loans_first_lien_domestic[df_loans_first_lien_domestic['rssd9001'].isin(small)]
+
+    ##Treasury and Others
+
+    df_treasury_and_others = df_treasury_and_others #treasury and others all banks 
+
+    df_treasury_and_others_GSIB = df_treasury_and_others[df_treasury_and_others['rssd9001'].isin(GSIB)] #treasury and others GSIB banks
+
+    df_treasury_and_others_large_ex_GSIB = df_treasury_and_others[df_treasury_and_others['rssd9001'].isin(large_ex_GSIB)] #treasury and others large non-GSIB baanks 
+
+    df_treasury_and_others_small = df_treasury_and_others[df_treasury_and_others['rssd9001'].isin(small)] #treasury and others small banks 
+    
+    ##Other Loan 
+
+    df_other_loan = df_other_loan #other loans for all banks 
+
+    df_other_loan_GSIB = df_other_loan[df_other_loan['rssd9001'].isin(GSIB)] #other loans for all GSIB banks 
+
+    df_other_loan_large_ex_GSIB = df_other_loan[df_other_loan['rssd9001'].isin(large_ex_GSIB)] #other loans for all large non-GSIB banks
+
+    df_other_loan_small = df_other_loan[df_other_loan['rssd9001'].isin(small)] #other oans for all small banks 
 
 
