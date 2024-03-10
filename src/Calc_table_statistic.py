@@ -456,7 +456,7 @@ def insured_deposit_coverage_ratio(insured_deposit, uninsured_deposit, bank_loss
 def final_statistic_table(bank_losses_assets, uninsured_deposit_mm_asset, insured_deposit_coverage):
     # Merge the DataFrames on bank_name and Bank_ID to include uninsured deposit/MM Asset ratios and insured deposit coverage ratios
     
-    # If your DataFrame's index includes a unique identifier for banks, then bank_count can be calculated like so
+    
     bank_count = len(bank_losses_assets.index)
 
     final_stats = pd.DataFrame({
@@ -480,7 +480,7 @@ def final_statistic_table(bank_losses_assets, uninsured_deposit_mm_asset, insure
         'Number of Banks': [len(bank_losses_assets.index.unique())]  # Count of unique banks
     })
 
-    # Rename index to 'All Banks' if that's the only category you are reporting on
+    # Rename index to 'All Banks'
     final_stats.index = ['All Banks']
 
     final_stats = final_stats.T
