@@ -64,4 +64,14 @@ def test_all_reports():
 
     assert total_assets_sum == expected
 
+def test_all_reports_total_assets_non_negative():
+    total_assets_sum = 0
+
+    for df in [df_RMBS_Final, df_loans_first_lien_domestic, df_treasury_and_others, df_other_loan]:
+        total = df.iloc[:,-6:].sum().sum()
+        total_assets_sum += total
+
+    assert total_assets_sum >= 0
+
+
 
