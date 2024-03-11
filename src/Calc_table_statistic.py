@@ -496,13 +496,13 @@ def GSIB_bank_id():
 
 def large_ex_GSIB_bank_id(large):
     bank_id_large_ex_GSIB = []
-    for bank_id in df_asset_large_ex_GSIB['RSSD9001']:
+    for bank_id in df_asset_large_ex_GSIB['rssd9001']:
        bank_id_large_ex_GSIB.append(bank_id)
     return bank_id_large_ex_GSIB
 
 def small_bank_id(small):
     bank_id_small = []
-    for bank_id in df_asset_small['RSSD9001']:
+    for bank_id in df_asset_small['rssd9001']:
        bank_id_small.append(bank_id)
 
 if __name__ == '__main__':
