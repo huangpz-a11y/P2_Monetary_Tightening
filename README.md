@@ -53,15 +53,15 @@ This is our Team's Data Science Tool for Finance final project. In this project 
 - Description: Series 2 of rcfd (used for unit test and initial exploration)
 - Source: https://wrds-www.wharton.upenn.edu/login/?next=/pages/get-data/bank-regulatory/call-reports/rcfd-series-2/
 
-10.hwv0m9qml6efztsi.csv
+10. hwv0m9qml6efztsi.csv
 - Description: Series 2 of rcon (used for unit test and initial exploration)
 - Source: https://wrds-www.wharton.upenn.edu/pages/get-data/bank-regulatory/call-reports/rcon-series-2/
 
-11.m3pzkcjsgvk26dwa.csv
+11. m3pzkcjsgvk26dwa.csv
 - Description: Series 1 of rcon (used for unit test and initial exploration)
 - Source: https://wrds-www.wharton.upenn.edu/pages/get-data/bank-regulatory/call-reports/rcon-series-1/
 
-12:nw5crmbtaa03thi9.csv
+12. nw5crmbtaa03thi9.csv
 - Description: FR Y-9C (Used for GSIB exploration)
 - Source: https://wrds-www.wharton.upenn.edu/pages/get-data/bank-regulatory/variable-metadata/variable-metadata/
 
