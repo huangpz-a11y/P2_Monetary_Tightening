@@ -2,6 +2,8 @@ import pandas as pd
 import load_WRDS
 import config
 import Clean_data
+import numpy as np
+from pathlib import Path
 
 DATA_DIR = config.DATA_DIR
 OUTPUT_DIR = config.OUTPUT_DIR
@@ -407,5 +409,13 @@ if __name__ == '__main__':
     ##################################################################################################################################################################
 
     table_1 = pd.concat([final_stats, final_stats_small, final_stats_large_ex_GSIB, final_stats_GSIB], axis=1)
+
+    # Sets format for printing to LaTeX
+    float_format_func = lambda x: '{:.1f}'.format(x)
+    latex_table_string = table_1.to_latex(float_format=float_format_func)
+    path = OUTPUT_DIR / f'Table1.tex'
+    with open(path, "w") as text_file:
+        text_file.write(latex_table_string)
+
 
     print(table_1)
