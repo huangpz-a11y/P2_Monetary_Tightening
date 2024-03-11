@@ -1,12 +1,17 @@
 import pandas as pd
 import pytest
 import load_assets
+import load_WRDS
 
-rcfd_data_1 = load_assets.load_wrds_reports('ddss0fpozaxonboe') #series 1 of rcfd
-rcfd_data_2 = load_assets.load_wrds_reports('dycfrwcdm9puanhs') #series 2 of rcfd
-rcon_data_1 = load_assets.load_wrds_reports('m3pzkcjsgvk26dwa') #series 1 of rcon
-rcon_data_2 = load_assets.load_wrds_reports('hwv0m9qml6efztsi') #series 2 of rcon
-rcfn_data = load_assets.load_wrds_reports('cipzs5x6g2axzlhe') #rcfn
+rcfd_data_1 = load_WRDS.load_RCFD_series_1()
+rcon_data_1 = load_WRDS.load_RCON_series_1()
+rcfd_data_2 = load_WRDS.load_RCFD_series_2()
+rcon_data_2 = load_WRDS.load_RCON_series_2()
+
+rcfd_data_1.columns = [col.upper() for col in rcfd_data_1.columns]
+rcon_data_1.columns = [col.upper() for col in rcon_data_1.columns]
+rcfd_data_2.columns = [col.upper() for col in rcfd_data_2.columns]
+rcon_data_2.columns = [col.upper() for col in rcon_data_2.columns]
 
 analysis_date = '03/31/2022'
 filtered_asset_level_0 = load_assets.clean_assets(rcfd_data_2,'RCFD2170',analysis_date)

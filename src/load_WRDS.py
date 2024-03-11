@@ -18,7 +18,7 @@ def pull_RCON_series_1(wrds_username=WRDS_USERNAME):
     """
     sql_query = """
         SELECT 
-            b.rssd9001, b.rssd9017, b.rssd9999, b.rcona555,
+            b.rssd9001, b.rssd9017, b.rssd9999, b.rcona555, b.rcona247,
             b.rcona556, b.rcona557, b.rcona558, b.rcona559, b.rcona560,
             b.rcona564, b.rcona565, b.rcona566, b.rcona567, b.rcona568,
             b.rcona569, b.rcon5597, b.rconf045, b.rconf049
@@ -47,8 +47,8 @@ def pull_RCON_series_2(wrds_username=WRDS_USERNAME):
         SELECT 
             b.rssd9001, b.rssd9017, b.rssd9999, b.rcona549,
             b.rcona550, b.rcona551, b.rcona552, b.rcona553, b.rcona554, 
-            b.rcona570, b.rcona571, b.rcona572, b.rcona573, b.rcona574, 
-            b.rcona575, b.rcon2170
+            b.rcona561, b.rcona562, b.rcona570, b.rcona571, b.rcona572, 
+            b.rcona573, b.rcona574, b.rcona575, b.rcon2170
         FROM 
             bank.wrds_call_rcon_2 AS b
         WHERE 
@@ -71,10 +71,10 @@ def pull_RCFD_series_1(wrds_username=WRDS_USERNAME):
     """
     sql_query = """
         SELECT 
-            b.rssd9001, b.rssd9017, b.rssd9999, b.rcfda555,
+            b.rssd9001, b.rssd9017, b.rssd9999, b.rcfda555, b.rcfda247,
             b.rcfda556, b.rcfda557, b.rcfda558, b.rcfda559, b.rcfda560,
-            b.rcfda570, b.rcfda571, b.rcfda572, b.rcfda573, b.rcfda574,
-            b.rcfda575
+            b.rcfda561, b.rcfda562, b.rcfda570, b.rcfda571, b.rcfda572, 
+            b.rcfda573, b.rcfda574, b.rcfda575
         FROM 
             bank.wrds_call_rcfd_1 AS b
         WHERE 
