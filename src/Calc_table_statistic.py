@@ -12,8 +12,8 @@ rcfd_series_2 = load_WRDS.load_RCFD_series_2(data_dir=DATA_DIR)
 rcon_series_2 = load_WRDS.load_RCON_series_2(data_dir=DATA_DIR)
 
 treasury_prices = pd.read_excel("./data/manual/combined_index_df.xlsx")
-df_SP_Treasury_bond_index = pd.read_excel("./data/manual/PerformanceGraphExport.xlsx")
-df_iShare_MBS_ETF = pd.read_csv("./data/manual/MBB.csv")
+df_SP_Treasury_bond_index = pd.read_excel("./data/manual/Treasury_Index.xlsx") 
+df_iShare_MBS_ETF = pd.read_csv("./data/manual/MBS_ETF.csv")
 
 def RMBs_Multiplier(df_SP_Treasury_bond_index, df_iShare_MBS_ETF, start_date = '2022-03-31', end_date = '2023-03-31'):
   
