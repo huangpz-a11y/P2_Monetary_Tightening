@@ -17,9 +17,9 @@ import seaborn as sns
 sns.set()
 
 # Plot1: Treasury by Maturity
-treasury_prices = pd.read_excel("../data/manual/combined_index_df.xlsx")
-df_SP_Treasury_bond_index = pd.read_excel("../data/manual/PerformanceGraphExport.xlsx")
-df_iShare_MBS_ETF = pd.read_csv("../data/manual/MBB.csv")
+treasury_prices = pd.read_excel("./data/manual/combined_index_df.xlsx")
+df_SP_Treasury_bond_index = pd.read_excel("./data/manual/PerformanceGraphExport.xlsx")
+df_iShare_MBS_ETF = pd.read_csv("./data/manual/MBB.csv")
 
 treasury_prices = treasury_prices[['date', 'iShares 0-1', 'iShares 1-3', 'sp 3-5', 'iShares 7-10', 'iShares 10-20', 'iShares 20+']].set_index('date')
 data_read.graph_index(treasury_prices, start_date, end_date, filename = filename_treasury)
