@@ -64,6 +64,9 @@ def test_all_reports():
 
     assert total_assets_sum == expected
 
+#Unit test for all reports total asset value is non-negative
+#Proposed addition to unit tests
+#Can add % cushion for total asset value for each asset type
 def test_all_reports_total_assets_non_negative():
     total_assets_sum = 0
 
@@ -73,5 +76,71 @@ def test_all_reports_total_assets_non_negative():
 
     assert total_assets_sum >= 0
 
+    expected_value = total_assets_sum #replace with number
+    percentage_cushion = 0.2
+    assert (((expected_value*percentage_cushion)<(total_assets_sum)) & ((total_assets_sum) < (expected_value*(1+percentage_cushion))))
 
+#Unit test for df_RMBS_Final asset value is non-negative
+#Proposed addition to unit tests
+#Can add % cushion for total asset value for each asset type
+def test_df_RMBS_non_negative():
+    total_RMBS_sum = 0
+
+    for df in [df_RMBS_Final]:
+        total = df.iloc[:,-6:].sum().sum()
+        total_RMBS_sum += total
+
+    assert total_RMBS_sum >= 0
+
+    expected_value = total_RMBS_sum #replace with number
+    percentage_cushion = 0.2
+    assert (((expected_value*percentage_cushion)<(total_RMBS_sum)) & ((total_RMBS_sum) < (expected_value*(1+percentage_cushion))))
+
+#Unit test for df_loans_first_lien_domestic asset value is non-negative
+#Proposed addition to unit tests
+#Can add % cushion for total asset value for each asset type   
+def test_df_loans_first_lien_domestic_non_negative():
+    total_loans_first_lien_domestic_sum = 0
+
+    for df in [df_loans_first_lien_domestic]:
+        total = df.iloc[:,-6:].sum().sum()
+        total_loans_first_lien_domestic_sum += total
+
+    assert total_loans_first_lien_domestic_sum >= 0
+
+    expected_value = total_loans_first_lien_domestic_sum #replace with number
+    percentage_cushion = 0.2
+    assert (((expected_value*percentage_cushion)<(total_loans_first_lien_domestic_sum)) & ((total_loans_first_lien_domestic_sum) < (expected_value*(1+percentage_cushion))))
+
+#Unit test for df_treasury_and_others asset value is non-negative
+#Proposed addition to unit tests
+#Can add % cushion for total asset value for each asset type   
+def test_df_treasury_and_others_non_negative():
+    total_treasury_and_others_sum = 0
+
+    for df in [df_treasury_and_others]:
+        total = df.iloc[:,-6:].sum().sum()
+        total_treasury_and_others += total
+
+    assert total_treasury_and_others_sum >= 0
+
+    expected_value = total_treasury_and_others_sum #replace with number
+    percentage_cushion = 0.2
+    assert (((expected_value*percentage_cushion)<(total_treasury_and_others_sum)) & ((total_treasury_and_others_sum) < (expected_value*(1+percentage_cushion))))
+
+#Unit test for df_other_loan asset value is non-negative
+#Proposed addition to unit tests
+#Can add % cushion for total asset value for each asset type  
+def test_df_other_loan_non_negative():
+    total_other_loan_sum = 0
+
+    for df in [df_other_loan]:
+        total = df.iloc[:,-6:].sum().sum()
+        total_other_loan_sum += total
+
+    assert total_other_loan_sum >= 0
+
+    expected_value = total_other_loan_sum #replace with number
+    percentage_cushion = 0.2
+    assert (((expected_value*percentage_cushion)<(total_other_loan_sum)) & ((total_other_loan_sum) < (expected_value*(1+percentage_cushion))))
 
