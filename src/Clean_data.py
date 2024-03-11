@@ -213,30 +213,30 @@ def get_insured_deposits(rcon_series_1, report_date = '03/31/2022'):
     return insured_deposit
 
 
-def clean_treasury_prices(treasury_prices):
+def clean_treasury_prices(treasury_prices, start_date = '2022-03-31', end_date = '2023-03-31'):
 
     treasury_prices = treasury_prices[['date', 'iShares 0-1', 'iShares 1-3', 'sp 3-5', 'iShares 7-10', 'iShares 10-20', 'iShares 20+']]
     treasury_prices = treasury_prices.set_index('date')
     treasury_prices = treasury_prices.resample('Q').first()
-    treasury_prices = treasury_prices.loc['2022-03-31':'2023-03-31']
+    treasury_prices = treasury_prices.loc[start_date:end_date]
     
     return treasury_prices
 
-def clean_sp_treasury_bond_index(df_SP_Treasury_bond_index):
+def clean_sp_treasury_bond_index(df_SP_Treasury_bond_index, start_date = '2022-03-31', end_date = '2023-03-31'):
 
     df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.set_index('date')
     df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.resample('Q').first()
-    df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.loc['2022-03-31':'2023-03-31']
+    df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.loc[start_date:end_date]
     
     return df_SP_Treasury_bond_index
 
-def clean_iShare_MBS_ETF(df_iShare_MBS_ETF):
+def clean_iShare_MBS_ETF(df_iShare_MBS_ETF, start_date = '2022-03-31', end_date = '2023-03-31'):
 
     df_iShare_MBS_ETF = df_iShare_MBS_ETF[['Date', 'Adj Close']]
     df_iShare_MBS_ETF['Date'] = pd.to_datetime(df_iShare_MBS_ETF['Date'])
     df_iShare_MBS_ETF.set_index('Date', inplace=True)
     df_iShare_MBS_ETF = df_iShare_MBS_ETF.resample('Q').first()
     df_iShare_MBS_ETF.index.rename('date', inplace=True)
-    df_iShare_MBS_ETF = df_iShare_MBS_ETF.loc['2022-03-31':'2023-03-31']
+    df_iShare_MBS_ETF = df_iShare_MBS_ETF.loc[start_date:end_date]
    
     return df_iShare_MBS_ETF
