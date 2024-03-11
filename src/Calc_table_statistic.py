@@ -1,5 +1,6 @@
 import pandas as pd
 import load_WRDS
+import load_assets
 import config
 import Clean_data
 

@@ -46,9 +46,16 @@ def save_df(df, data_name):
     path = (DATA_DIR /'pulled' / data_name)
     df.to_excel(f'{path}.xlsx')
 
-def load_df(data_name):
-    path = (DATA_DIR /'pulled' / data_name)
-    df = pd.read_excel(f'{path}.xlsx')
+def load_df(data_name,manual=0,csv=False):
+    if manual == 0:
+        path = (DATA_DIR /'pulled' / data_name)
+    else:
+        path = (DATA_DIR /'manual' / data_name)
+    
+    if csv == True:
+        df = pd.read_csv(f'{path}.csv')
+    else:
+        df = pd.read_excel(f'{path}.xlsx')
     df = df.set_index(df.columns[0])
     return df
 

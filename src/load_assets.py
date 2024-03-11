@@ -30,3 +30,13 @@ def clean_loans(df,loan_cols,date):
     df = df[df['report_date'] == date]  
 
     return df 
+
+def clean_others(df,other_cols,other_names,date):
+    col_ls = ['RSSD9001','RSSD9017','RSSD9999']
+    col_ls = col_ls + other_cols
+    df = df[col_ls]
+    df = df.dropna()
+    df.columns = ['Bank_ID','bank_name','report_date']+other_names
+    df = df[df['report_date'] == date]  
+
+    return df 
