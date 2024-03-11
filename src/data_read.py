@@ -52,7 +52,7 @@ def load_df(data_name):
     df = df.set_index(df.columns[0])
     return df
 
-def graph_index(df,start_date,end_date):
+def graph_index(df,start_date,end_date, title = 'Treasury by Maturity', filename = ''):
     graph_df = df[df.index >= start_date]
     graph_df = graph_df[graph_df.index <= end_date]
     # could also do .last()
@@ -61,14 +61,18 @@ def graph_index(df,start_date,end_date):
     scaler = 1/graph_df.iloc[0]
     scaled_df = graph_df * scaler
     
-    plt.figure(figsize=(14, 7))
+    #plt.figure(figsize=(14, 7))
     for col in scaled_df:
         plt.plot(scaled_df.index,scaled_df[col],label=col)
 
-    plt.title('Treasury by Maturity')
+    plt.title(title)
     plt.xlabel('Date')
     plt.ylabel('Scaled Price / Ratio Value')
     plt.legend()
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.show()
+    if filename == '':
+        plt.show()
+    else:
+        plt.savefig(filename)
+    plt.close()
