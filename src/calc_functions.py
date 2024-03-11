@@ -120,3 +120,85 @@ def report_losses(inital_date,analysis_date,df_RMBS_Final, df_loans_first_lien_d
         }
 
     return bank_losses_assets
+
+def calculate_uninsured_deposit_mm_asset(uninsured_deposit, bank_losses):
+    
+    # Initialize an empty list to store the results
+    results = []
+    
+    # Adjust the uninsured_deposit DataFrame to use both 'bank_name' and 'Bank_ID' as a multi-index for quick lookup
+    uninsured_lookup = uninsured_deposit.set_index(['bank_name', 'bank_ID'])['uninsured_deposit'].to_dict()
+    
+    # Iterate over each row in bank_losses DataFrame
+    for index, bank_loss_row in bank_losses.iterrows():
+        bank_name = bank_loss_row['bank_name']
+        bank_id = bank_loss_row['bank_ID']
+        
+        # Adjust the lookup to include 'Bank_ID'
+        uninsured_deposit_value = uninsured_lookup.get((bank_name, bank_id), 0)
+        
+        # Calculate 'MM Asset' as the sum of 'total_loss' and 'gross_asset' (as defined in the paper)
+        mm_asset = bank_loss_row['total_loss'] + bank_loss_row['gross_asset']
+        
+        # Calculate Uninsured Deposit/MM Asset ratio 
+        if mm_asset > 0:
+            uninsured_deposit_mm_asset_ratio = uninsured_deposit_value / mm_asset
+        
+        # Append to final dataframe
+        results.append({
+            'bank_name': bank_name,
+            'bank_ID': bank_id, 
+            'total_loss': bank_loss_row['total_loss'], 
+            'total_asset': bank_loss_row['gross_asset'],
+            'mm_asset': mm_asset,
+            'uninsured_deposit': uninsured_deposit_value, 
+            'Uninsured_Deposit_MM_Asset': uninsured_deposit_mm_asset_ratio
+        })
+    
+    # Convert results list to DataFrame and sort by 'Bank_ID'
+    results_df = pd.DataFrame(results).sort_values(by=['bank_name', 'bank_ID'])
+    
+    return results_df
+
+def insured_deposit_coverage_ratio(insured_deposit, uninsured_deposit, bank_losses):
+    # Initialize an empty list to store the results
+    results = []
+    
+    # Create dictionaries from insured and uninsured deposits for quick lookup
+    insured_lookup = insured_deposit.set_index(['bank_name', 'bank_ID'])['insured_deposit'].to_dict()
+    uninsured_lookup = uninsured_deposit.set_index(['bank_name', 'bank_ID'])['uninsured_deposit'].to_dict()
+    
+    # Iterate over each row in bank_losses DataFrame
+    for index, bank_loss_row in bank_losses.iterrows():
+        bank_name = bank_loss_row['bank_name']
+        bank_id = bank_loss_row['bank_ID']
+        
+        # Retrieve insured and uninsured deposit values
+        insured_deposit_value = insured_lookup.get((bank_name, bank_id), 0)
+        uninsured_deposit_value = uninsured_lookup.get((bank_name, bank_id), 0)
+        
+        # Calculate mark-to-market asset value as the sum of 'total_asset' minus 'total_loss'
+        mark_to_market_asset_value = bank_loss_row['gross_asset'] + bank_loss_row['total_loss']
+        
+        # Calculate the insured deposit coverage ratio
+        if insured_deposit_value > 0:  # Prevent division by zero
+            uninsured_deposit_mm_asset_ratio = uninsured_deposit_value / mark_to_market_asset_value
+            coverage_ratio = (mark_to_market_asset_value - uninsured_deposit_value - insured_deposit_value) / insured_deposit_value
+        
+        # Append the result
+        results.append({
+            'bank_name': bank_name,
+            'bank_ID': bank_id,
+            'total_loss': bank_loss_row['total_loss'], 
+            'total_asset': bank_loss_row['gross_asset'],
+            'mm_asset': mark_to_market_asset_value,
+            'insured_deposit': insured_deposit_value,
+            'uninsured_deposit': uninsured_deposit_value,
+            'Uninsured_Deposit_MM_Asset': uninsured_deposit_mm_asset_ratio,
+            'insured_deposit_coverage_ratio': coverage_ratio
+        })
+    
+    # Convert results list to DataFrame
+    results_df = pd.DataFrame(results)
+    
+    return results_df

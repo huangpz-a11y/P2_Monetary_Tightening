@@ -439,7 +439,7 @@ if __name__ == '__main__':
     """
      ##Calculations for all banks##################################################################################################################################### 
     # Calculate the losses
-    bank_losses_assets_updated = report_losses(df_RMBS_Final, df_loans_first_lien_domestic, df_treasury_and_others, df_other_loan, treasury_prices_updated, RMBS_multiplier_updated, df_asset)
+    bank_losses_assets_updated = report_losses(df_RMBS_Final, df_loans_first_lien_domestic, df_treasury_and_others, df_other_loan, treasury_prices_updated, RMBS_multiplier_updated, df_asset, end_date = '2023-12-31')
 
     # Calculate the uninsured deposit/MM asset ratio
     uninsured_deposit_mm_asset_updated = calculate_uninsured_deposit_mm_asset(uninsured_deposit, bank_losses_assets_updated)
@@ -454,7 +454,7 @@ if __name__ == '__main__':
 
     ##Calculations for all GSIB banks################################################################################################################################
     # Calculate the losses
-    bank_losses_assets_GSIB_updated = report_losses(df_RMBS_GSIB, df_loans_first_lien_domestic_GSIB, df_treasury_and_others_GSIB, df_other_loan_GSIB, treasury_prices_updated, RMBS_multiplier_updated, df_asset_GSIB)
+    bank_losses_assets_GSIB_updated = report_losses(df_RMBS_GSIB, df_loans_first_lien_domestic_GSIB, df_treasury_and_others_GSIB, df_other_loan_GSIB, treasury_prices_updated, RMBS_multiplier_updated, df_asset_GSIB, end_date = '2023-12-31')
 
     # Calculate the uninsured deposit/MM asset ratio
     uninsured_deposit_mm_asset_GSIB_updated = calculate_uninsured_deposit_mm_asset(uninsured_deposit_GSIB, bank_losses_assets_GSIB_updated)
@@ -470,7 +470,7 @@ if __name__ == '__main__':
 
     ##Calculations for all Large non-GSIB banks################################################################################################################################
     # Calculate the losses
-    bank_losses_assets_large_ex_GSIB_updated = report_losses(df_RMBS_large_ex_GSIB, df_loans_first_lien_domestic_large_ex_GSIB, df_treasury_and_others_large_ex_GSIB, df_other_loan_large_ex_GSIB, treasury_prices_updated, RMBS_multiplier_updated, df_asset_large_ex_GSIB)
+    bank_losses_assets_large_ex_GSIB_updated = report_losses(df_RMBS_large_ex_GSIB, df_loans_first_lien_domestic_large_ex_GSIB, df_treasury_and_others_large_ex_GSIB, df_other_loan_large_ex_GSIB, treasury_prices_updated, RMBS_multiplier_updated, df_asset_large_ex_GSIB, end_date = '2023-12-31')
 
     # Calculate the uninsured deposit/MM asset ratio
     uninsured_deposit_mm_asset_large_ex_GSIB_updated = calculate_uninsured_deposit_mm_asset(uninsured_deposit_large_ex_GSIB, bank_losses_assets_large_ex_GSIB_updated)
@@ -487,7 +487,7 @@ if __name__ == '__main__':
     ##Calculations for small banks################################################################################################################################
 
     # Calculate the losses
-    bank_losses_assets_small_updated = report_losses(df_RMBS_small, df_loans_first_lien_domestic_small, df_treasury_and_others_small, df_other_loan_small, treasury_prices_updated, RMBS_multiplier_updated, df_asset_small)
+    bank_losses_assets_small_updated = report_losses(df_RMBS_small, df_loans_first_lien_domestic_small, df_treasury_and_others_small, df_other_loan_small, treasury_prices_updated, RMBS_multiplier_updated, df_asset_small, end_date = '2023-12-31')
 
     # Calculate the uninsured deposit/MM asset ratio
     uninsured_deposit_mm_asset_small_updated = calculate_uninsured_deposit_mm_asset(uninsured_deposit_small, bank_losses_assets_small_updated)
