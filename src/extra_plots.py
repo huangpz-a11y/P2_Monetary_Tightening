@@ -3,8 +3,8 @@ import config
 from pathlib import Path
 DATA_DIR = Path(config.DATA_DIR)
 OUTPUT_DIR = Path(config.OUTPUT_DIR)
-start_date = '2022-01-01'
-end_date = '2023-03-31'
+start_date = config.START_DATE
+end_date = config.END_DATE
 
 filename_treasury = OUTPUT_DIR / 'Treasury_by_maturity.png'
 filename_mbs = OUTPUT_DIR / 'MBS_and_Treasury.png'

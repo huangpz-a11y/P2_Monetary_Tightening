@@ -12,6 +12,7 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{float}
 
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 
@@ -59,24 +60,27 @@ Our strategy began with replicating the first column of Table 1, which summarize
 
 We experienced some difficulties in identifying certain G-SIBs within the call report data, as the paper doesn't give detailed description about that. This difficulty arises because G-SIBs are recognized at the holding company level, whereas Bank Call Reports are submitted on behalf of individual bank entities rather than at the holding company level. Thus, each bank within a holding company is obligated to submit its own Call Report. This situation leads to inconsistencies in naming.
 
+Besides, instead of only one field, the insured deposite is reported through multiple fields in the bank call reports, which makes it difficult to replicate the insured deposite number. 
+
 \section{Results and Complementary Figures}
 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.75\textwidth]{../output/Treasury_by_maturity.png}
 \caption{\label{fig:myplot1}Market Prices of US Treasuries with different maturities due to Fed Tightening, relative to their value in 2022:Q1.}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.75\textwidth]{../output/MBS_and_Treasury.png}
 \caption{\label{fig:myplot2}Market Prices US Treasuries and MBS arelative to their value in 2022:Q1.}
+From the graph, the price changes of RMBS from 2022:Q1 to 2023:Q1 decreases more than US Treasuries, we will construct a RMBS multiplier defined as the ratio of price changes of these two indexes in our calculation to reflect the higher risk of RMBS and mortgage loans.
 \end{figure}
 
 
 
-\begin{table}
+\begin{table}[H]
 
 \centering
 \input{../output/Table1.tex}
@@ -84,7 +88,14 @@ We experienced some difficulties in identifying certain G-SIBs within the call r
 \label{table:Table1.tex}
 \end{table}
 
+\begin{table}[H]
 
+\centering
+\input{../output/Table2.tex}
+\caption{Reproduce Table 1 with updated ETF/Indexes market price data till 2023:Q4}
+As the Fed continues to tighten, the market prices of US Treasuries and MBS continue to fall. From the table, the mark-to-market losses of banks continue to increase.
+\label{table:Table2.tex}
+\end{table}
 
 
 \end{document}
