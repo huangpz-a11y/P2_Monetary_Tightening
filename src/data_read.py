@@ -15,6 +15,9 @@ import config
 DATA_DIR = config.DATA_DIR
 
 def process_sp_data(data_name,short_name):
+    """
+    Process the S&P data from the manual folder
+    """
     path = (DATA_DIR /'manual' / data_name)
     # print(path)
     df = pd.read_excel(f'{path}.xlsx',skiprows=6)
@@ -25,6 +28,9 @@ def process_sp_data(data_name,short_name):
     return df
 
 def fetch_etfs(etf_ls,start_date,end_date):
+    """
+    Fetch the ETF data from Yahoo Finance
+    """
     date_range = pd.date_range(start=start_date, end=end_date, freq='D')
     df = pd.DataFrame(index=date_range)
     df.index.name = 'date'
@@ -35,6 +41,9 @@ def fetch_etfs(etf_ls,start_date,end_date):
     return df
 
 def combine_dfs(df_ls):
+    """
+    Combine the ETF dataframes
+    """
     df = df_ls[0].copy()
     for i in df_ls[1:]:
         df[i.columns[0]] = i
@@ -43,10 +52,16 @@ def combine_dfs(df_ls):
     return df
 
 def save_df(df, data_name):
+    """
+    Save the dataframe to the pulled folder
+    """
     path = (DATA_DIR /'pulled' / data_name)
     df.to_excel(f'{path}.xlsx')
 
 def load_df(data_name,manual=0,csv=False):
+    """
+    Load the dataframe from the manual or pulled folder
+    """
     if manual == 0:
         path = (DATA_DIR /'pulled' / data_name)
     else:
@@ -60,6 +75,9 @@ def load_df(data_name,manual=0,csv=False):
     return df
 
 def graph_index(df,start_date,end_date, title = 'Treasury by Maturity', filename = ''):
+    """
+    Graph the index data
+    """
     graph_df = df[df.index >= start_date]
     graph_df = graph_df[graph_df.index <= end_date]
     # could also do .last()

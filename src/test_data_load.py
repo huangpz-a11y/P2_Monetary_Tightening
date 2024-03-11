@@ -8,6 +8,9 @@ sp_3_5 = data_read.process_sp_data('S&P 3-5','sp 3-5')
 sp_7_10 = data_read.process_sp_data('S&P 7-10','sp 7-10')
 
 def test_df_range():
+    """
+    Test the range of the dataframes for sp_1_3, sp_3_5, and sp_7_10
+    """
     test_vals1 = [340.2, 332.77]
     test_vals2 = [488.75,461.71]
     test_vals3 = [680.3, 606.15]
@@ -19,6 +22,9 @@ def test_df_range():
         assert sp_7_10[sp_7_10.index == test_dates[i]].iloc[0,0] == test_vals3[i]
 
 def test_combined_df():
+    """
+    Test the combined dataframe for ishares, sp_1_3, sp_3_5, and sp_7_10, and other ETFs
+    """
     ishares = data_read.load_df('ishares')
     df_ls = [ishares,sp_1_3,sp_3_5,sp_7_10]
     combined_df = data_read.combine_dfs(df_ls)

@@ -7,6 +7,16 @@ DATA_DIR = config.DATA_DIR
 OUTPUT_DIR = config.OUTPUT_DIR
 
 def get_RMBs(rcfd_series_1, rcon_series_1, report_date = '03/31/2022'):
+    """
+    This function takes in the rcfd and rcon series and returns the RMBS data for the given report date.
+
+    Args:
+    rcfd_series_1 (pd.DataFrame): rcfd series data
+    rcon_series_1 (pd.DataFrame): rcon series data
+
+    Returns:
+    df_RMBS_Final (pd.DataFrame): RMBS data for the given report date
+    """
     
     #domestic and foreign
     df_RMBS = rcfd_series_1[['rssd9001', 'rssd9017', 'rssd9999', 'rcfda555', 'rcfda556', 'rcfda557', 'rcfda558', 'rcfda559', 'rcfda560']]
@@ -40,6 +50,7 @@ def get_RMBs(rcfd_series_1, rcon_series_1, report_date = '03/31/2022'):
     df_RMBS_dom = df_RMBS_dom.dropna()
     df_RMBS_dom = df_RMBS_dom[df_RMBS_dom['report_date'] == report_date]
     
+    # Concatenate the two dataframes
     df_RMBS_Final = pd.concat([df_RMBS_dom, df_RMBS])
     df_RMBS_Final = df_RMBS_Final.sort_index()
     
@@ -47,6 +58,16 @@ def get_RMBs(rcfd_series_1, rcon_series_1, report_date = '03/31/2022'):
 
 
 def get_treasuries(rcfd_series_2, rcon_series_2, report_date = '03/31/2022'):
+    """
+    This function takes in the rcfd and rcon series and returns the treasuries data for the given report date.
+
+    Args:
+    rcfd_series_2 (pd.DataFrame): rcfd series data
+    rcon_series_2 (pd.DataFrame): rcon series data
+
+    Returns:
+    df_treasury_and_others (pd.DataFrame): Treasuries data for the given report date
+    """
 
     #domestic and foreign
     df_non_RMBS = rcfd_series_2[['rssd9001','rssd9017', 'rssd9999', 'rcfda549', 'rcfda550', 'rcfda551', 'rcfda552', 'rcfda553', 'rcfda554']]
@@ -81,6 +102,7 @@ def get_treasuries(rcfd_series_2, rcon_series_2, report_date = '03/31/2022'):
     df_non_RMBS_dom = df_non_RMBS_dom[df_non_RMBS_dom['report_date'] == report_date]
     df_non_RMBS_dom
 
+    # Concatenate the two dataframes
     df_treasury_and_others = pd.concat([df_non_RMBS_dom, df_non_RMBS])
     df_treasury_and_others = df_treasury_and_others.sort_index()
     
@@ -88,7 +110,16 @@ def get_treasuries(rcfd_series_2, rcon_series_2, report_date = '03/31/2022'):
 
 
 def get_loans(rcon_series_1, report_date = '03/31/2022'):
+    """
+    This function takes in the rcon series and returns the loans data for the given report date.
 
+    Args:
+    rcon_series_1 (pd.DataFrame): rcon series data
+
+    Returns:
+    df_loans_first_lien_domestic (pd.DataFrame): Loans data for the given report date
+    
+    """
     df_loans_first_lien_domestic = rcon_series_1[['rssd9001','rssd9017', 'rssd9999', 'rcona564', 'rcona565', 'rcona566', 'rcona567', 'rcona568', 'rcona569']]
     df_loans_first_lien_domestic = df_loans_first_lien_domestic.rename(columns={
         'rssd9001': 'Bank_ID',
@@ -106,6 +137,16 @@ def get_loans(rcon_series_1, report_date = '03/31/2022'):
 
 
 def get_other_loan(rcon_series_2, rcfd_series_1, report_date = '03/31/2022'):
+    """
+    This function takes in the rcon and rcfd series and returns the other loans data for the given report date.
+
+    Args:
+    rcon_series_2 (pd.DataFrame): rcon series data
+    rcfd_series_1 (pd.DataFrame): rcfd series data
+
+    Returns:
+    df_other_loan (pd.DataFrame): Other loans data for the given report date
+    """
 
     #domestic and foreign
     df_loans_exc_first_lien = rcfd_series_1[['rssd9001','rssd9017', 'rssd9999', 'rcfda570', 'rcfda571', 'rcfda572', 'rcfda573', 'rcfda574', 'rcfda575']]
@@ -138,6 +179,7 @@ def get_other_loan(rcon_series_2, rcfd_series_1, report_date = '03/31/2022'):
     df_loans_exc_first_lien_domestic = df_loans_exc_first_lien_domestic.dropna()
     df_loans_exc_first_lien_domestic = df_loans_exc_first_lien_domestic[df_loans_exc_first_lien_domestic['report_date'] == report_date]
 
+    # Concatenate the two dataframes
     df_other_loan = pd.concat([df_loans_exc_first_lien_domestic, df_loans_exc_first_lien])
     df_other_loan = df_other_loan.sort_index()
 
@@ -145,6 +187,17 @@ def get_other_loan(rcon_series_2, rcfd_series_1, report_date = '03/31/2022'):
 
 
 def get_total_asset(rcfd_series_2, rcon_series_2, report_date = '03/31/2022'):
+    """
+    This function takes in the rcfd and rcon series and returns the total asset data for the given report date.
+
+    Args:
+    rcfd_series_2 (pd.DataFrame): rcfd series data
+    rcon_series_2 (pd.DataFrame): rcon series data
+
+    Returns:
+    df_asset (pd.DataFrame): Total asset data for the given report date
+    
+    """
 
     #This grabs the
     asset_level_domestic_foriegn = rcfd_series_2[['rssd9001','rssd9017','rssd9999','rcfd2170']]
@@ -163,6 +216,7 @@ def get_total_asset(rcfd_series_2, rcon_series_2, report_date = '03/31/2022'):
     filtered_asset_level_domestic  = filtered_asset_level_domestic.rename(columns={
     'rcon2170': 'Total Asset'})
 
+    # Concatenate the two dataframes
     df_asset = pd.concat([filtered_asset_level_domestic_foriegn, filtered_asset_level_domestic])
 
     df_asset = df_asset[['rssd9001','rssd9017','Total Asset']]
@@ -177,6 +231,15 @@ def get_total_asset(rcfd_series_2, rcon_series_2, report_date = '03/31/2022'):
     return df_asset
 
 def get_uninsured_deposits(rcon_series_1, report_date = '03/31/2022'):
+    """
+    This function takes in the rcon series and returns the uninsured deposits data for the given report date.
+
+    Args:
+    rcon_series_1 (pd.DataFrame): rcon series data
+
+    Returns:
+    uninsured_deposit (pd.DataFrame): Uninsured deposits data for the given report date
+    """
 
     uninsured_deposit = rcon_series_1[['rssd9001','rssd9017', 'rssd9999', 'rcon5597']]
 
@@ -193,6 +256,15 @@ def get_uninsured_deposits(rcon_series_1, report_date = '03/31/2022'):
 
 
 def get_insured_deposits(rcon_series_1, report_date = '03/31/2022'):
+    """
+    This function takes in the rcon series and returns the insured deposits data for the given report date.
+
+    Args:
+    rcon_series_1 (pd.DataFrame): rcon series data
+
+    Returns:
+    insured_deposit (pd.DataFrame): Insured deposits data for the given report date
+    """
 
     insured_deposit = rcon_series_1[['rssd9001','rssd9017', 'rssd9999', 'rconf049', 'rconf045']] 
     #RCFDF049 are Deposit accounts (excluding retirement accounts) of $250,000 or less
@@ -208,34 +280,62 @@ def get_insured_deposits(rcon_series_1, report_date = '03/31/2022'):
 
     insured_deposit = insured_deposit[insured_deposit['report_date'] == report_date]
 
+    #Sum the two columns to get the total insured deposit
     insured_deposit['insured_deposit'] = insured_deposit['insured_deposit_1'] + insured_deposit['insured_deposit_2']
 
     return insured_deposit
 
 
 def clean_treasury_prices(treasury_prices, start_date = '2022-03-31', end_date = '2023-03-31'):
+    """
+    This function takes in the treasury prices data and returns the cleaned treasury prices data for the given start and end date.
+
+    Args:
+    treasury_prices (pd.DataFrame): treasury prices data
+
+    Returns:
+    treasury_prices (pd.DataFrame): Cleaned treasury prices data for the given start and end date
+    """
 
     treasury_prices = treasury_prices[['date', 'iShares 0-1', 'iShares 1-3', 'sp 3-5', 'iShares 7-10', 'iShares 10-20', 'iShares 20+']]
-    treasury_prices = treasury_prices.set_index('date')
-    treasury_prices = treasury_prices.resample('Q').first()
+    treasury_prices = treasury_prices.set_index('date') #set date as index
+    treasury_prices = treasury_prices.resample('Q').first() #resample to quarterly
     treasury_prices = treasury_prices.loc[start_date:end_date]
     
     return treasury_prices
 
 def clean_sp_treasury_bond_index(df_SP_Treasury_bond_index, start_date = '2022-03-31', end_date = '2023-03-31'):
+    """
+    This function takes in the SP Treasury bond index data and returns the cleaned SP Treasury bond index data for the given start and end date.
 
-    df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.set_index('date')
-    df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.resample('Q').first()
+    Args:
+    df_SP_Treasury_bond_index (pd.DataFrame): SP Treasury bond index data
+
+    Returns:
+    df_SP_Treasury_bond_index (pd.DataFrame): Cleaned SP Treasury bond index data for the given start and end date
+    """
+
+    df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.set_index('date') #set date as index
+    df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.resample('Q').first() #resample to quarterly
     df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.loc[start_date:end_date]
     
     return df_SP_Treasury_bond_index
 
 def clean_iShare_MBS_ETF(df_iShare_MBS_ETF, start_date = '2022-03-31', end_date = '2023-03-31'):
+    """
+    This function takes in the iShare MBS ETF data and returns the cleaned iShare MBS ETF data for the given start and end date.
+
+    Args:
+    df_iShare_MBS_ETF (pd.DataFrame): iShare MBS ETF data
+
+    Returns:
+    df_iShare_MBS_ETF (pd.DataFrame): Cleaned iShare MBS ETF data for the given start and end date
+    """
 
     df_iShare_MBS_ETF = df_iShare_MBS_ETF[['Date', 'Adj Close']]
     df_iShare_MBS_ETF['Date'] = pd.to_datetime(df_iShare_MBS_ETF['Date'])
-    df_iShare_MBS_ETF.set_index('Date', inplace=True)
-    df_iShare_MBS_ETF = df_iShare_MBS_ETF.resample('Q').first()
+    df_iShare_MBS_ETF.set_index('Date', inplace=True) 
+    df_iShare_MBS_ETF = df_iShare_MBS_ETF.resample('Q').first() #resample to quarterly
     df_iShare_MBS_ETF.index.rename('date', inplace=True)
     df_iShare_MBS_ETF = df_iShare_MBS_ETF.loc[start_date:end_date]
    
