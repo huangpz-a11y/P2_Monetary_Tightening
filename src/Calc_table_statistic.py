@@ -1,6 +1,7 @@
 import pandas as pd
 import load_WRDS
 import config
+import Clean_data
 
 DATA_DIR = config.DATA_DIR
 OUTPUT_DIR = config.OUTPUT_DIR
@@ -13,242 +14,6 @@ rcon_series_2 = load_WRDS.load_RCON_series_2(data_dir=DATA_DIR)
 treasury_prices = pd.read_excel("./data/manual/combined_index_df.xlsx")
 df_SP_Treasury_bond_index = pd.read_excel("./data/manual/PerformanceGraphExport.xlsx")
 df_iShare_MBS_ETF = pd.read_csv("./data/manual/MBB.csv")
-
-def get_RMBs(rcfd_series_1, rcon_series_1, report_date = '03/31/2022'):
-    
-    #domestic and foreign
-    df_RMBS = rcfd_series_1[['rssd9001', 'rssd9017', 'rssd9999', 'rcfda555', 'rcfda556', 'rcfda557', 'rcfda558', 'rcfda559', 'rcfda560']]
-    df_RMBS = df_RMBS.rename(columns={
-        'rssd9001': 'Bank_ID',
-        'rssd9017': 'bank_name',
-        'rssd9999': 'report_date',
-        'rcfda555': '<3m',
-        'rcfda556': '3m-1y',
-        'rcfda557': '1y-3y',
-        'rcfda558': '3y-5y',
-        'rcfda559': '5y-15y',
-        'rcfda560': '>15y'
-    })
-    df_RMBS = df_RMBS.dropna()
-    df_RMBS = df_RMBS[df_RMBS['report_date'] == report_date]
-
-    #domestic only
-    df_RMBS_dom = rcon_series_1[['rssd9001','rssd9017', 'rssd9999', 'rcona555', 'rcona556', 'rcona557', 'rcona558', 'rcona559', 'rcona560']]
-    df_RMBS_dom = df_RMBS_dom.rename(columns={
-        'rssd9001': 'Bank_ID',
-        'rssd9017': 'bank_name',
-        'rssd9999': 'report_date',
-        'rcona555': '<3m',
-        'rcona556': '3m-1y',
-        'rcona557': '1y-3y',
-        'rcona558': '3y-5y',
-        'rcona559': '5y-15y',
-        'rcona560': '>15y'
-    })
-    df_RMBS_dom = df_RMBS_dom.dropna()
-    df_RMBS_dom = df_RMBS_dom[df_RMBS_dom['report_date'] == report_date]
-    
-    df_RMBS_Final = pd.concat([df_RMBS_dom, df_RMBS])
-    df_RMBS_Final = df_RMBS_Final.sort_index()
-    
-    return df_RMBS_Final
-
-
-def get_treasuries(rcfd_series_2, rcon_series_2, report_date = '03/31/2022'):
-
-    #domestic and foreign
-    df_non_RMBS = rcfd_series_2[['rssd9001','rssd9017', 'rssd9999', 'rcfda549', 'rcfda550', 'rcfda551', 'rcfda552', 'rcfda553', 'rcfda554']]
-    df_non_RMBS = df_non_RMBS.rename(columns={
-        'rssd9001': 'Bank_ID',
-        'rssd9017': 'bank_name',
-        'rssd9999': 'report_date',
-        'rcfda549': '<3m',
-        'rcfda550': '3m-1y',
-        'rcfda551': '1y-3y',
-        'rcfda552': '3y-5y',
-        'rcfda553': '5y-15y',
-        'rcfda554': '>15y'
-    })
-    df_non_RMBS = df_non_RMBS.dropna()
-    df_non_RMBS = df_non_RMBS[df_non_RMBS['report_date'] == report_date]
-
-    #domestic only
-    df_non_RMBS_dom = rcon_series_2[['rssd9001','rssd9017','rssd9999', 'rcona549', 'rcona550', 'rcona551', 'rcona552', 'rcona553', 'rcona554']]
-    df_non_RMBS_dom = df_non_RMBS_dom.rename(columns={
-        'rssd9001': 'Bank_ID',
-        'rssd9017': 'bank_name',
-        'rssd9999': 'report_date',
-        'rcona549': '<3m',
-        'rcona550': '3m-1y',
-        'rcona551': '1y-3y',
-        'rcona552': '3y-5y',
-        'rcona553': '5y-15y',
-        'rcona554': '>15y'
-    })
-    df_non_RMBS_dom = df_non_RMBS_dom.dropna()
-    df_non_RMBS_dom = df_non_RMBS_dom[df_non_RMBS_dom['report_date'] == report_date]
-    df_non_RMBS_dom
-
-    df_treasury_and_others = pd.concat([df_non_RMBS_dom, df_non_RMBS])
-    df_treasury_and_others = df_treasury_and_others.sort_index()
-    
-    return df_treasury_and_others
-
-
-def get_loans(rcon_series_1, report_date = '03/31/2022'):
-
-    df_loans_first_lien_domestic = rcon_series_1[['rssd9001','rssd9017', 'rssd9999', 'rcona564', 'rcona565', 'rcona566', 'rcona567', 'rcona568', 'rcona569']]
-    df_loans_first_lien_domestic = df_loans_first_lien_domestic.rename(columns={
-        'rssd9001': 'Bank_ID',
-        'rssd9017': 'bank_name',
-        'rssd9999': 'report_date',
-        'rcona564': '<3m',
-        'rcona565': '3m-1y',
-        'rcona566': '1y-3y',
-        'rcona567': '3y-5y',
-        'rcona568': '5y-15y',
-        'rcona569': '>15y'
-    })
-    df_loans_first_lien_domestic = df_loans_first_lien_domestic[df_loans_first_lien_domestic['report_date'] == report_date]
-    return df_loans_first_lien_domestic
-
-
-def get_other_loan(rcon_series_2, rcfd_series_1, report_date = '03/31/2022'):
-
-    #domestic and foreign
-    df_loans_exc_first_lien = rcfd_series_1[['rssd9001','rssd9017', 'rssd9999', 'rcfda570', 'rcfda571', 'rcfda572', 'rcfda573', 'rcfda574', 'rcfda575']]
-    df_loans_exc_first_lien = df_loans_exc_first_lien.rename(columns={
-        'rssd9001': 'Bank_ID',
-        'rssd9017': 'bank_name',
-        'rssd9999': 'report_date',
-        'rcfda570': '<3m',
-        'rcfda571': '3m-1y',
-        'rcfda572': '1y-3y',
-        'rcfda573': '3y-5y',
-        'rcfda574': '5y-15y',
-        'rcfda575': '>15y'
-    })
-    df_loans_exc_first_lien = df_loans_exc_first_lien.dropna()
-    df_loans_exc_first_lien = df_loans_exc_first_lien[df_loans_exc_first_lien['report_date'] ==  report_date]
-
-    df_loans_exc_first_lien_domestic = rcon_series_2[['rssd9001', 'rssd9017', 'rssd9999', 'rcona570', 'rcona571', 'rcona572', 'rcona573', 'rcona574', 'rcona575']]
-    df_loans_exc_first_lien_domestic = df_loans_exc_first_lien_domestic.rename(columns={
-        'rssd9001': 'Bank_ID',
-        'rssd9017': 'bank_name',
-        'rssd9999': 'report_date',
-        'rcona570': '<3m',
-        'rcona571': '3m-1y',
-        'rcona572': '1y-3y',
-        'rcona573': '3y-5y',
-        'rcona574': '5y-15y',
-        'rcona575': '>15y'
-    })
-    df_loans_exc_first_lien_domestic = df_loans_exc_first_lien_domestic.dropna()
-    df_loans_exc_first_lien_domestic = df_loans_exc_first_lien_domestic[df_loans_exc_first_lien_domestic['report_date'] == report_date]
-
-    df_other_loan = pd.concat([df_loans_exc_first_lien_domestic, df_loans_exc_first_lien])
-    df_other_loan = df_other_loan.sort_index()
-
-    return df_other_loan
-
-
-def get_total_asset(rcfd_series_2, rcon_series_2, report_date = '03/31/2022'):
-
-    #This grabs the
-    asset_level_domestic_foriegn = rcfd_series_2[['rssd9001','rssd9017','rssd9999','rcfd2170']]
-    asset_level_domestic = rcon_series_2[['rssd9001','rssd9017','rssd9999','rcon2170']]
-
-    #drop the rows with missing values
-    asset_level_domestic_foriegn.dropna(inplace = True)
-    asset_level_domestic.dropna(inplace = True)
-
-    filtered_asset_level_domestic_foriegn = asset_level_domestic_foriegn[asset_level_domestic_foriegn['rssd9999'] == report_date]
-    filtered_asset_level_domestic = asset_level_domestic[asset_level_domestic['rssd9999'] == report_date]
-
-    filtered_asset_level_domestic_foriegn  = filtered_asset_level_domestic_foriegn.rename(columns={
-    'rcfd2170': 'Total Asset'})
-
-    filtered_asset_level_domestic  = filtered_asset_level_domestic.rename(columns={
-    'rcon2170': 'Total Asset'})
-
-    df_asset = pd.concat([filtered_asset_level_domestic_foriegn, filtered_asset_level_domestic])
-
-    df_asset = df_asset[['rssd9001','rssd9017','Total Asset']]
-
-    df_asset  = df_asset.rename(columns={
-    'rssd9001': 'Bank_ID',
-    'rssd9017': 'bank_name',
-    'rssd9999': 'report_date',
-    'Total Asset': 'gross_asset',
-    })
-
-    return df_asset
-
-def get_uninsured_deposits(rcon_series_1, report_date = '03/31/2022'):
-
-    uninsured_deposit = rcon_series_1[['rssd9001','rssd9017', 'rssd9999', 'rcon5597']]
-
-    uninsured_deposit = uninsured_deposit.rename(columns={
-    'rssd9001': 'bank_ID',
-    'rssd9017': 'bank_name',
-    'rssd9999': 'report_date',
-    'rcon5597': 'uninsured_deposit'
-
-    })
-    uninsured_deposit = uninsured_deposit[uninsured_deposit['report_date'] == report_date]
-
-    return uninsured_deposit
-
-
-def get_insured_deposits(rcon_series_1, report_date = '03/31/2022'):
-
-    insured_deposit = rcon_series_1[['rssd9001','rssd9017', 'rssd9999', 'rconf049', 'rconf045']] 
-    #RCFDF049 are Deposit accounts (excluding retirement accounts) of $250,000 or less
-    #RCFDF045 are Retirement deposit accounts of $250,000 or less
-
-    insured_deposit = insured_deposit.rename(columns={
-        'rssd9001': 'bank_ID',
-        'rssd9017': 'bank_name',
-        'rssd9999': 'report_date',
-        'rconf049': 'insured_deposit_1',
-        'rconf045': 'insured_deposit_2'
-    })
-
-    insured_deposit = insured_deposit[insured_deposit['report_date'] == report_date]
-
-    insured_deposit['insured_deposit'] = insured_deposit['insured_deposit_1'] + insured_deposit['insured_deposit_2']
-
-    return insured_deposit
-
-
-def clean_treasury_prices(treasury_prices):
-
-    treasury_prices = treasury_prices[['date', 'iShares 0-1', 'iShares 1-3', 'sp 3-5', 'iShares 7-10', 'iShares 10-20', 'iShares 20+']]
-    treasury_prices = treasury_prices.set_index('date')
-    treasury_prices = treasury_prices.resample('Q').first()
-    treasury_prices = treasury_prices.loc['2022-03-31':'2023-03-31']
-    
-    return treasury_prices
-
-def clean_sp_treasury_bond_index(df_SP_Treasury_bond_index):
-
-    df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.set_index('date')
-    df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.resample('Q').first()
-    df_SP_Treasury_bond_index = df_SP_Treasury_bond_index.loc['2022-03-31':'2023-03-31']
-    
-    return df_SP_Treasury_bond_index
-
-def clean_iShare_MBS_ETF(df_iShare_MBS_ETF):
-
-    df_iShare_MBS_ETF = df_iShare_MBS_ETF[['Date', 'Adj Close']]
-    df_iShare_MBS_ETF['Date'] = pd.to_datetime(df_iShare_MBS_ETF['Date'])
-    df_iShare_MBS_ETF.set_index('Date', inplace=True)
-    df_iShare_MBS_ETF = df_iShare_MBS_ETF.resample('Q').first()
-    df_iShare_MBS_ETF.index.rename('date', inplace=True)
-    df_iShare_MBS_ETF = df_iShare_MBS_ETF.loc['2022-03-31':'2023-03-31']
-   
-    return df_iShare_MBS_ETF
-
 
 def RMBs_Multiplier(df_SP_Treasury_bond_index, df_iShare_MBS_ETF, start_date = '2022-03-31', end_date = '2023-03-31'):
   
@@ -381,15 +146,15 @@ def calculate_uninsured_deposit_mm_asset(uninsured_deposit, bank_losses_assets):
     uninsured_lookup = uninsured_deposit.set_index(['bank_name', 'bank_ID'])['uninsured_deposit'].to_dict()
     
     # Iterate over each row in bank_losses DataFrame
-    for index, bank_loss_row in bank_losses_assets.iterrows():
+    for _, bank_loss_row in bank_losses_assets.iterrows():
         bank_name = bank_loss_row['bank_name']
         bank_id = bank_loss_row['bank_ID']
         
         # Adjust the lookup to include 'Bank_ID'
         uninsured_deposit_value = uninsured_lookup.get((bank_name, bank_id), 0)
         
-        # Calculate 'MM Asset' as the sum of 'total_loss' and 'gross_asset' (as defined in the paper)
-        mm_asset = - bank_loss_row['total_loss'] + bank_loss_row['gross_asset']
+        # Calculate 'MM Asset' as (as defined in the paper)
+        mm_asset = bank_loss_row['total_loss'] + bank_loss_row['gross_asset']
         
         # Calculate Uninsured Deposit/MM Asset ratio 
         if mm_asset > 0:
@@ -430,8 +195,8 @@ def insured_deposit_coverage_ratio(insured_deposit, uninsured_deposit, bank_loss
         insured_deposit_value = insured_lookup.get((bank_name, bank_id), 0)
         uninsured_deposit_value = uninsured_lookup.get((bank_name, bank_id), 0)
         
-        # Calculate mark-to-market asset value as the sum of 'total_asset' minus 'total_loss'
-        mark_to_market_asset_value = bank_loss_row['gross_asset'] + bank_loss_row['total_loss']
+        # Calculate mark-to-market asset value 
+        mark_to_market_asset_value = bank_loss_row['total_loss'] + bank_loss_row['gross_asset']
         
         # Calculate the insured deposit coverage ratio
         if insured_deposit_value > 0:  # Prevent division by zero
@@ -453,16 +218,16 @@ def insured_deposit_coverage_ratio(insured_deposit, uninsured_deposit, bank_loss
     return results_df
 
 
-def final_statistic_table(bank_losses_assets, uninsured_deposit_mm_asset, insured_deposit_coverage):
+def final_statistic_table(bank_losses_assets, uninsured_deposit_mm_asset, insured_deposit_coverage, index_name = 'All Banks'):
     # Merge the DataFrames on bank_name and Bank_ID to include uninsured deposit/MM Asset ratios and insured deposit coverage ratios
     
-    # If your DataFrame's index includes a unique identifier for banks, then bank_count can be calculated like so
+    
     bank_count = len(bank_losses_assets.index)
 
     final_stats = pd.DataFrame({
         'Aggregate Loss': [f"{-round(bank_losses_assets['total_loss'].sum() / 1e9, 1)}T"],  # Convert to trillions
         'Bank Level Loss': [f"{-round(bank_losses_assets['total_loss'].median() / 1e3, 1)}M"],  # Convert to millions
-        'Bank Level Loss Std': [f"{round(bank_losses_assets['total_loss'].std() / 1e6, 1)}B"],  # Std deviation for Bank Level Loss
+        'Bank Level Loss Std': [f"{round(bank_losses_assets['total_loss'].std() / 1e6, 2)}B"],  # Std deviation for Bank Level Loss
         'Share RMBS': [round(bank_losses_assets['Share RMBs'].median() * 100, 1)],  # Median percentage
         'Share RMBS Std': [round(bank_losses_assets['Share RMBs'].std() * 100, 1)],  # Std deviation for Share RMBS
         'Share Treasury and Other': [round(bank_losses_assets['Share Treasury and Other'].median() * 100, 1)],  # Median percentage
@@ -480,34 +245,112 @@ def final_statistic_table(bank_losses_assets, uninsured_deposit_mm_asset, insure
         'Number of Banks': [len(bank_losses_assets.index.unique())]  # Count of unique banks
     })
 
-    # Rename index to 'All Banks' if that's the only category you are reporting on
-    final_stats.index = ['All Banks']
+    # Rename index to 'All Banks'
+    final_stats.index = [index_name]
 
     final_stats = final_stats.T
     
     return final_stats
 
+def GSIB_bank_id():
+    #GSIB = [35301,93619,229913,398668,413208,451965,476810,480228,488318,
+     #497404,541101,651448,688079,722777,812164,852218,934329,1225761,
+     #1443266,1456501,2182786,2362458,2489805,2531991,3066025]
+    GSIB = [852218, 480228, 476810, 413208, #JP Morgan, Bank of America, Citigroup, HSBC
+      2980209, 2182786, 541101, 655839, 1015560, 229913,#Barclays, Goldman Sachs, BNY Mellon, CCB COMMUNITY BANK, ICBC, Mizuho
+       1456501, 722777, 35301, 925411, 497404, 3212149, #Morgan Stanley, Santander, State Street, Sumitomo Mitsui, TD Bank, UBS
+      451965] #wells fargo
+    return GSIB
+
+def large_ex_GSIB_bank_id(large):
+    bank_id_large_ex_GSIB = []
+    for bank_id in large['Bank_ID']:
+       bank_id_large_ex_GSIB.append(bank_id)
+    return bank_id_large_ex_GSIB
+
+def small_bank_id(small):
+    bank_id_small = []
+    for bank_id in small['Bank_ID']:
+       bank_id_small.append(bank_id)
+    return bank_id_small
+
 if __name__ == '__main__':
 
 
     # Clean the dataframes
-    treasury_prices = clean_treasury_prices(treasury_prices)
-    df_SP_Treasury_bond_index = clean_sp_treasury_bond_index(df_SP_Treasury_bond_index)
-    df_iShare_MBS_ETF = clean_iShare_MBS_ETF(df_iShare_MBS_ETF)
+    treasury_prices = Clean_data.clean_treasury_prices(treasury_prices)
+    df_SP_Treasury_bond_index = Clean_data.clean_sp_treasury_bond_index(df_SP_Treasury_bond_index)
+    df_iShare_MBS_ETF = Clean_data.clean_iShare_MBS_ETF(df_iShare_MBS_ETF)
 
     # Calculate the multiplier for RMBS
     RMBS_multiplier = RMBs_Multiplier(df_SP_Treasury_bond_index, df_iShare_MBS_ETF)
     
     # Get the required dataframes
-    df_RMBS_Final = get_RMBs(rcfd_series_1, rcon_series_1)
-    df_loans_first_lien_domestic = get_loans(rcon_series_1)
-    df_treasury_and_others = get_treasuries(rcfd_series_2, rcon_series_2)
-    df_other_loan = get_other_loan(rcon_series_2, rcfd_series_1)
-    df_asset = get_total_asset(rcfd_series_2, rcon_series_2)
-    uninsured_deposit = get_uninsured_deposits(rcon_series_1)
-    insured_deposits = get_insured_deposits(rcon_series_1)
+    df_RMBS_Final = Clean_data.get_RMBs(rcfd_series_1, rcon_series_1)
+    df_loans_first_lien_domestic = Clean_data.get_loans(rcon_series_1)
+    df_treasury_and_others = Clean_data.get_treasuries(rcfd_series_2, rcon_series_2)
+    df_other_loan = Clean_data.get_other_loan(rcon_series_2, rcfd_series_1)
+    df_asset = Clean_data.get_total_asset(rcfd_series_2, rcon_series_2)
+    uninsured_deposit = Clean_data.get_uninsured_deposits(rcon_series_1)
+    insured_deposits = Clean_data.get_insured_deposits(rcon_series_1)
+
+    ##Total Assets
+    df_asset = df_asset #total assets all banks
+
+    ##GSIB Banks
+    GSIB = GSIB_bank_id() #list of GSIB bank IDs
+    df_asset_GSIB = df_asset[df_asset['Bank_ID'].isin(GSIB)] #total assets all GSIB banks
+
+    ##Large non-GSIB Banks
+    df_asset_large_ex_GSIB = df_asset[(~df_asset['Bank_ID'].isin(GSIB)) & (df_asset['gross_asset']>1384000)] #total assets all large non-GSIB banks
+    large_ex_GSIB = large_ex_GSIB_bank_id(df_asset_large_ex_GSIB) #list of large non-GSIB bank IDs
+
+    ##Small Banks
+    df_asset_small = df_asset[(~df_asset['Bank_ID'].isin(GSIB)) & (df_asset['gross_asset']<=1384000)] #total asset all small banks 
+    small = small_bank_id(df_asset_small) #list of small bank IDs
+
+    ##RMBS
+
+    df_RMBS_Final = df_RMBS_Final #RMBS for all banks 
+    df_RMBS_GSIB = df_RMBS_Final[df_RMBS_Final['Bank_ID'].isin(GSIB)] #RMBS for GSIB banks
+    df_RMBS_large_ex_GSIB = df_RMBS_Final[df_RMBS_Final['Bank_ID'].isin(large_ex_GSIB)] #RMBS for large non-GSIB banks
+    df_RMBS_small = df_RMBS_Final[df_RMBS_Final['Bank_ID'].isin(small)] #RMBS for small banks
+
+    ##Loans First Lien Domestic
+
+    df_loans_first_lien_domestic = df_loans_first_lien_domestic # loans first lien domestic for all banks
+    df_loans_first_lien_domestic_GSIB = df_loans_first_lien_domestic[df_loans_first_lien_domestic['Bank_ID'].isin(GSIB)] # loans first lien domestic for all GSIB banks
+    df_loans_first_lien_domestic_large_ex_GSIB = df_loans_first_lien_domestic[df_loans_first_lien_domestic['Bank_ID'].isin(large_ex_GSIB)] # loans first lien domestic for all large non-GSIB banks
+    df_loans_first_lien_domestic_small = df_loans_first_lien_domestic[df_loans_first_lien_domestic['Bank_ID'].isin(small)]
+
+    ##Treasury and Others
+
+    df_treasury_and_others = df_treasury_and_others #treasury and others all banks 
+    df_treasury_and_others_GSIB = df_treasury_and_others[df_treasury_and_others['Bank_ID'].isin(GSIB)] #treasury and others GSIB banks
+    df_treasury_and_others_large_ex_GSIB = df_treasury_and_others[df_treasury_and_others['Bank_ID'].isin(large_ex_GSIB)] #treasury and others large non-GSIB baanks 
+    df_treasury_and_others_small = df_treasury_and_others[df_treasury_and_others['Bank_ID'].isin(small)] #treasury and others small banks 
     
-    # Calculate the losses
+    ##Other Loan 
+
+    df_other_loan = df_other_loan #other loans for all banks 
+    df_other_loan_GSIB = df_other_loan[df_other_loan['Bank_ID'].isin(GSIB)] #other loans for all GSIB banks 
+    df_other_loan_large_ex_GSIB = df_other_loan[df_other_loan['Bank_ID'].isin(large_ex_GSIB)] #other loans for all large non-GSIB banks
+    df_other_loan_small = df_other_loan[df_other_loan['Bank_ID'].isin(small)] #other oans for all small banks 
+
+    #uninsured deposits
+    uninsured_deposit = uninsured_deposit #uninsured deposits for all banks
+    uninsured_deposit_GSIB = uninsured_deposit[uninsured_deposit['bank_ID'].isin(GSIB)] #uninsured deposits for GSIB banks
+    uninsured_deposit_large_ex_GSIB = uninsured_deposit[uninsured_deposit['bank_ID'].isin(large_ex_GSIB)] #uninsured deposits for large non-GSIB banks
+    uninsured_deposit_small = uninsured_deposit[uninsured_deposit['bank_ID'].isin(small)] #uninsured deposits for small banks
+
+    #insured deposits
+    insured_deposits = insured_deposits #insured deposits for all banks
+    insured_deposits_GSIB = insured_deposits[insured_deposits['bank_ID'].isin(GSIB)] #insured deposits for GSIB banks
+    insured_deposits_large_ex_GSIB = insured_deposits[insured_deposits['bank_ID'].isin(large_ex_GSIB)] #insured deposits for large non-GSIB banks
+    insured_deposits_small = insured_deposits[insured_deposits['bank_ID'].isin(small)] #insured deposits for small banks
+
+    ##Calculations for all banks##################################################################################################################################### 
+    # Calculate the losses 
     bank_losses_assets = report_losses(df_RMBS_Final, df_loans_first_lien_domestic, df_treasury_and_others, df_other_loan, treasury_prices, RMBS_multiplier, df_asset)
     
     # Calculate the uninsured deposit/MM asset ratio
@@ -519,6 +362,50 @@ if __name__ == '__main__':
     # Calculate the final statistics table
     final_stats = final_statistic_table(bank_losses_assets, uninsured_deposit_mm_asset, insured_deposit_coverage)
     
-    print(final_stats)
+    ##################################################################################################################################################################
 
+    ##Calculations for all GSIB banks################################################################################################################################
+    # Calculate the losses 
+    bank_losses_assets_GSIB = report_losses(df_RMBS_GSIB, df_loans_first_lien_domestic_GSIB, df_treasury_and_others_GSIB, df_other_loan_GSIB, treasury_prices, RMBS_multiplier, df_asset_GSIB)
+    
+    # Calculate the uninsured deposit/MM asset ratio
+    uninsured_deposit_mm_asset_GSIB = calculate_uninsured_deposit_mm_asset(uninsured_deposit_GSIB, bank_losses_assets_GSIB)
 
+    # Calculate the insured deposit coverage ratio
+    insured_deposit_coverage_GSIB = insured_deposit_coverage_ratio(insured_deposits_GSIB, uninsured_deposit_GSIB, bank_losses_assets_GSIB)
+    
+    # Calculate the final statistics table
+    final_stats_GSIB = final_statistic_table(bank_losses_assets_GSIB, uninsured_deposit_mm_asset_GSIB, insured_deposit_coverage_GSIB, index_name = 'GSIB Banks')
+    ##################################################################################################################################################################
+
+    ##Calculations for all Large non-GSIB banks################################################################################################################################
+    # Calculate the losses 
+    bank_losses_assets_large_ex_GSIB = report_losses(df_RMBS_large_ex_GSIB, df_loans_first_lien_domestic_large_ex_GSIB, df_treasury_and_others_large_ex_GSIB, df_other_loan_large_ex_GSIB, treasury_prices, RMBS_multiplier, df_asset_large_ex_GSIB)
+    
+    # Calculate the uninsured deposit/MM asset ratio
+    uninsured_deposit_mm_asset_large_ex_GSIB = calculate_uninsured_deposit_mm_asset(uninsured_deposit_large_ex_GSIB, bank_losses_assets_large_ex_GSIB)
+
+    # Calculate the insured deposit coverage ratio
+    insured_deposit_coverage_large_ex_GSIB = insured_deposit_coverage_ratio(insured_deposits_large_ex_GSIB, uninsured_deposit_large_ex_GSIB, bank_losses_assets_large_ex_GSIB)
+    
+    # Calculate the final statistics table
+    final_stats_large_ex_GSIB = final_statistic_table(bank_losses_assets_large_ex_GSIB, uninsured_deposit_mm_asset_large_ex_GSIB, insured_deposit_coverage_large_ex_GSIB, index_name = 'Large Ex GSIB Banks')
+    ##################################################################################################################################################################
+
+    ##Calculations for small banks################################################################################################################################
+    # Calculate the losses 
+    bank_losses_assets_small = report_losses(df_RMBS_small, df_loans_first_lien_domestic_small, df_treasury_and_others_small, df_other_loan_small, treasury_prices, RMBS_multiplier, df_asset_small)
+    
+    # Calculate the uninsured deposit/MM asset ratio
+    uninsured_deposit_mm_asset_small = calculate_uninsured_deposit_mm_asset(uninsured_deposit_small, bank_losses_assets_small)
+
+    # Calculate the insured deposit coverage ratio
+    insured_deposit_coverage_small = insured_deposit_coverage_ratio(insured_deposits_small, uninsured_deposit_small, bank_losses_assets_small)
+    
+    # Calculate the final statistics table
+    final_stats_small = final_statistic_table(bank_losses_assets_small, uninsured_deposit_mm_asset_small, insured_deposit_coverage_small, index_name = 'Small Banks')
+    ##################################################################################################################################################################
+
+    table_1 = pd.concat([final_stats, final_stats_small, final_stats_large_ex_GSIB, final_stats_GSIB], axis=1)
+
+    print(table_1)
