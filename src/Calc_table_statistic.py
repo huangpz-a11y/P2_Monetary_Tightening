@@ -539,6 +539,7 @@ if __name__ == '__main__':
     
     print(final_stats)
 
+
     ##Total Assets
 
     df_asset = df_asset #total assets all banks
@@ -592,4 +593,74 @@ if __name__ == '__main__':
 
     df_other_loan_small = df_other_loan[df_other_loan['rssd9001'].isin(small)] #other oans for all small banks 
 
+
+    ##Calculations for all banks##################################################################################################################################### 
+    # Calculate the losses 
+    bank_losses_assets = report_losses(df_RMBS_Final, df_loans_first_lien_domestic, df_treasury_and_others, df_other_loan, treasury_prices, RMBS_multiplier, df_asset)
+    
+    # Calculate the uninsured deposit/MM asset ratio
+    uninsured_deposit_mm_asset = calculate_uninsured_deposit_mm_asset(uninsured_deposit, bank_losses_assets)
+
+    # Calculate the insured deposit coverage ratio
+    insured_deposit_coverage = insured_deposit_coverage_ratio(insured_deposits, uninsured_deposit, bank_losses_assets)
+    
+    # Calculate the final statistics table
+    final_stats = final_statistic_table(bank_losses_assets, uninsured_deposit_mm_asset, insured_deposit_coverage)
+    
+    print('All Banks: ' + final_stats)
+    ##################################################################################################################################################################
+
+
+
+    ##Calculations for all GSIB banks################################################################################################################################
+    # Calculate the losses 
+    bank_losses_assets_GSIB = report_losses(df_RMBS_GSIB, df_loans_first_lien_domestic_GSIB, df_treasury_and_others_GSIB, df_other_loan_GSIB, treasury_prices, RMBS_multiplier, df_asset_GSIB)
+    
+    # Calculate the uninsured deposit/MM asset ratio
+    uninsured_deposit_mm_asset_GSIB = calculate_uninsured_deposit_mm_asset(uninsured_deposit, bank_losses_assets_GSIB)
+
+    # Calculate the insured deposit coverage ratio
+    insured_deposit_coverage_GSIB = insured_deposit_coverage_ratio(insured_deposits, uninsured_deposit, bank_losses_assets_GSIB)
+    
+    # Calculate the final statistics table
+    final_stats_GSIB = final_statistic_table(bank_losses_assets_GSIB, uninsured_deposit_mm_asset, insured_deposit_coverage)
+    
+    print('GSIB Banks: ' + final_stats_GSIB)
+    ##################################################################################################################################################################
+
+
+
+    ##Calculations for all Large non-GSIB banks################################################################################################################################
+    # Calculate the losses 
+    bank_losses_assets_large_ex_GSIB = report_losses(df_RMBS_large_ex_GSIB, df_loans_first_lien_domestic_large_ex_GSIB, df_treasury_and_others_large_ex_GSIB, df_other_loan_large_ex_GSIB, treasury_prices, RMBS_multiplier, df_asset_large_ex_GSIB)
+    
+    # Calculate the uninsured deposit/MM asset ratio
+    uninsured_deposit_mm_asset_large_ex_GSIB = calculate_uninsured_deposit_mm_asset(uninsured_deposit, bank_losses_assets_large_ex_GSIB)
+
+    # Calculate the insured deposit coverage ratio
+    insured_deposit_coverage_large_ex_GSIB = insured_deposit_coverage_ratio(insured_deposits, uninsured_deposit, bank_losses_assets_large_ex_GSIB)
+    
+    # Calculate the final statistics table
+    final_stats_large_ex_GSIB = final_statistic_table(bank_losses_assets_large_ex_GSIB, uninsured_deposit_mm_asset, insured_deposit_coverage)
+    
+    print('Large Ex GSIB Banks: ' + final_stats_large_ex_GSIB)
+    ##################################################################################################################################################################
+
+
+
+    ##Calculations for small banks################################################################################################################################
+    # Calculate the losses 
+    bank_losses_assets_small = report_losses(df_RMBS_small, df_loans_first_lien_domestic_small, df_treasury_and_others_small, df_other_loan_small, treasury_prices, RMBS_multiplier, df_asset_small)
+    
+    # Calculate the uninsured deposit/MM asset ratio
+    uninsured_deposit_mm_asset_small = calculate_uninsured_deposit_mm_asset(uninsured_deposit, bank_losses_assets_small)
+
+    # Calculate the insured deposit coverage ratio
+    insured_deposit_coverage_small = insured_deposit_coverage_ratio(insured_deposits, uninsured_deposit, bank_losses_assets_large_ex_GSIB)
+    
+    # Calculate the final statistics table
+    final_stats_small = final_statistic_table(bank_losses_assets_large_ex_GSIB, uninsured_deposit_mm_asset, insured_deposit_coverage)
+    
+    print('Small Banks: ' + final_stats_small)
+    ##################################################################################################################################################################
 
