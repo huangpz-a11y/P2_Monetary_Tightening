@@ -118,9 +118,8 @@ def test_df_loans_first_lien_domestic_non_negative():
 def test_df_treasury_and_others_non_negative():
     total_treasury_and_others_sum = 0
 
-    for df in [df_treasury_and_others]:
-        total = df.iloc[:,-6:].sum().sum()
-        total_treasury_and_others += total
+    total = df_treasury_and_others.iloc[:,-6:].sum().sum()
+    total_treasury_and_others_sum += total
 
     assert total_treasury_and_others_sum >= 0
 
