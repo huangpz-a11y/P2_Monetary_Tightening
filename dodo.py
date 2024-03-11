@@ -131,15 +131,15 @@ def task_summary_stats():
     }
 
 
-def task_example_plot():
-    """Example plots"""
-    file_dep = [Path("./src") / file for file in ["example_plot.py", "load_fred.py"]]
-    file_output = ["example_plot.png"]
+def task_extra_plot():
+    """Extra plots"""
+    file_dep = [Path("./src") / file for file in ["extra_plots.py", "data_read.py"]]
+    file_output = ["Treasury_by_Maturity.png", "MBS_and_Treasury"]
     targets = [OUTPUT_DIR / file for file in file_output]
 
     return {
         "actions": [
-            "ipython ./src/example_plot.py",
+            "ipython ./src/extra_plots.py",
         ],
         "targets": targets,
         "file_dep": file_dep,
@@ -220,23 +220,19 @@ def task_run_notebooks():
 def task_compile_latex_docs():
     """Compile the LaTeX documents to PDFs"""
     file_dep = [
-        "./reports/report_example.tex",
-        "./reports/slides_example.tex",
-        "./src/example_plot.py",
-        "./src/example_table.py",
+        "./reports/project_report.tex",
+        "./src/extra_plots.py",
+        # "./src/example_table.py",
     ]
     file_output = [
-        "./reports/report_example.pdf",
-        "./reports/slides_example.pdf",
+        "./reports/project_report.pdf",
     ]
     targets = [file for file in file_output]
 
     return {
         "actions": [
-            "latexmk -xelatex -cd ./reports/report_example.tex",  # Compile
-            "latexmk -xelatex -c -cd ./reports/report_example.tex",  # Clean
-            "latexmk -xelatex -cd ./reports/slides_example.tex",  # Compile
-            "latexmk -xelatex -c -cd ./reports/slides_example.tex",  # Clean
+            "latexmk -xelatex -cd ./reports/project_report.tex",  # Compile
+            "latexmk -xelatex -c -cd ./reports/project_report.tex",  # Clean
             # "latexmk -CA -cd ../reports/",
         ],
         "targets": targets,

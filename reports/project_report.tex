@@ -1,0 +1,90 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with`a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{Final Project}
+\author{Jason Wang, Juan Ramirez, Maxwell Dender, Leon Tan, Peizhe Huang}
+
+\begin{document}
+\maketitle
+
+
+\section{Introduction}
+
+
+Since 2022, in response to rising inflation in the U.S., the Federal Reserve Bank implemented a significant tightening of monetary policy. This led to a notable increase in the federal funds rate from the first quarter of 2022 to the first quarter of 2023. As a consequence, long-dated bank assets suffered substantial losses. It's worth noting that bank call reports often do not adjust a considerable portion of their assets to market value, suggesting that the actual losses might exceed those recorded in the books,  and the risk of runs by uninsured depositors may be underestimated.
+
+In this project, our group endeavors to replicate Table 1 from \href{https://www.nber.org/papers/w31048}{Jiang et al (2023). Monetary Tightening and US Bank Fragility in 2023: Mark-to-Market Losses and Uninsured Depositor Runs?. No. w31048. National Bureau of Economic Research, 2023.}. Utilizing tradable and liquid market indexes, this table calculates mark-to-market bank losses for each FDIC-insured depository institutions in the U.S. and presents the descriptive statistics of key metrics by bank size and by different types of assets held, providing a comprehensive snapshot of mark-to-market losses across various U.S. banks.
+ 
+
+\section{Data}
+
+We obtained data for 2022:Q1 bank call reports from the WRDS Bank Regulatory Database, originally sourced from the FFIEC. Specifically, we accessed data series identified by the labels RCON, RCFD and RCFN, which contain call report variables for our replication purpose, including the balance sheet (from Schedule RC), the values of MBS securities (from Schedule RC-B) and the values of loans including and excluding those that are secured by first liens on 1-4 family residential properties (from Schedule RC-C) by maturity and repricing breakdown.
+
+In order to calculate the mark-to-market loss values, we followed the paper to retrieve the following indexes and ETF market prices. The maturity structure in these market data is chosen to match the asset maturity and repricing breakdown in the call reports. Among the following, the MBS market price is from the iShares MBS ETF, and the US Treasury market indexes are from the S\&P U.S. Treasury Bond Index and the iShares Treasury ETF.
+\begin{itemize}
+\item iShares 0-1 Year Treasury ETF
+\item iShares 1-3 Year Treasury ETF
+\item S\&P 3-5 Year Treasury Index
+\item iShares 7-10 Year Treasury ETF
+\item iShares 10-20 Year Treasury ETF
+\item iShares 20+ Year Treasury ETF
+\item S\&P U.S. Treasury Bond Index
+\item iShares MBS ETF
+\end{itemize}
+
+
+\section{Project Reflection}
+\subsection{Successes}
+Through various means, we confirmed the accuracy of our intermediate findings, drawing on hints throughout the paper to ensure alignment with its data and methodology. For instance, the paper occasionally references additional statistics not found in Table 1, such as the total assets on all banks' balance sheets for 2022:Q1, along with the proportion of security assets and total loan assets. We successfully matched these figures.
+
+Furthermore, the paper specifies that only 72\% of the assets on the balance sheet are marked to market. By collecting all necessary call report variables and calculating our mark-to-market assets as a percentage of total assets, we arrived at 73\%, closely aligning with the paper's figure. This alignment suggests we correctly identified the assets involved in computing mark-to-market losses as described in the study. Consequently, we managed to match both the product categorization and the total assets accurately.
+
+Our strategy began with replicating the first column of Table 1, which summarizes statistics across all banks, before moving on to categorize banks and recalculating losses. We successfully getting very close numbers to the majority of statistics in the first column, which further confirmed our understanding of the methodology employed in the paper.
+
+\subsection{Challenges}
+
+We experienced some difficulties in identifying certain G-SIBs within the call report data, as the paper doesn't give detailed description about that. This difficulty arises because G-SIBs are recognized at the holding company level, whereas Bank Call Reports are submitted on behalf of individual bank entities rather than at the holding company level. Thus, each bank within a holding company is obligated to submit its own Call Report. This situation leads to inconsistencies in naming.
+
+\section{Results and Complementary Figures}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.75\textwidth]{../output/Treasury_by_maturity.png}
+\caption{\label{fig:myplot}Market Prices of US Treasuries with different maturities due to Fed Tightening, relative to their value in 2022:Q1.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.75\textwidth]{../output/MBS_and_Treasury.png}
+\caption{\label{fig:myplot}Market Prices US Treasuries and MBS arelative to their value in 2022:Q1.}
+\end{figure}
+
+
+
+\begin{table}
+
+\centering
+\input{../output/Table1.tex}
+\caption{Our replication result of Table 1 in Jiang et al (2023)}
+\label{table:Table1.tex}
+\end{table}
+
+
+
+
+\end{document}
