@@ -1,6 +1,16 @@
 import pandas as pd
 
 def RMBs_Multiplier(df_SP_Treasury_bond_index, df_iShare_MBS_ETF,inital_date,analysis_date):
+    """
+    Calculate the multiplier for RMBS assets based on the change in MBS and Treasury bond prices.
+
+    Parameters:
+    df_SP_Treasury_bond_index (DataFrame): DataFrame containing S&P U.S. Treasury Bond Index data
+    df_iShare_MBS_ETF (DataFrame): DataFrame containing iShares MBS ETF data
+
+    Returns:
+    float: The calculated multiplier
+    """
   
     upper_treasury = df_SP_Treasury_bond_index.loc[analysis_date, 'S&P U.S. Treasury Bond Index']
     lower_treasury = df_SP_Treasury_bond_index.loc[inital_date, 'S&P U.S. Treasury Bond Index']
@@ -15,7 +25,25 @@ def RMBs_Multiplier(df_SP_Treasury_bond_index, df_iShare_MBS_ETF,inital_date,ana
     return multiplier
 
 def report_losses(inital_date,analysis_date,df_RMBS_Final, df_loans_first_lien_domestic, df_treasury_and_others, df_other_loan, treasury_prices, RMBS_multiplier, gross_asset):
+    """
+    Calculate the losses for each bank based on the provided data and assumptions.
+
+    Parameters:
+    inital_date (str): The initial date for analysis
+    analysis_date (str): The date for analysis
+    df_RMBS_Final (DataFrame): DataFrame containing RMBS data
+    df_loans_first_lien_domestic (DataFrame): DataFrame containing domestic first lien loans data
+    df_treasury_and_others (DataFrame): DataFrame containing treasury and other assets data
+    df_other_loan (DataFrame): DataFrame containing other loan data
+    treasury_prices (DataFrame): DataFrame containing treasury prices data
+    RMBS_multiplier (float): The multiplier for RMBS assets
+    gross_asset (DataFrame): DataFrame containing gross asset data
+
+    Returns:
+    DataFrame: A DataFrame containing the calculated losses for each bank and associate assets
+    """
     
+    # Calculate the price change for each treasury bond category
     price_change = {
         '<1y': treasury_prices.loc[analysis_date, 'iShares 0-1'] / treasury_prices.loc[inital_date, 'iShares 0-1'] - 1,
         '1y-3y': treasury_prices.loc[analysis_date, 'iShares 1-3'] / treasury_prices.loc[inital_date, 'iShares 1-3'] - 1,
@@ -25,6 +53,7 @@ def report_losses(inital_date,analysis_date,df_RMBS_Final, df_loans_first_lien_d
         '>20y': treasury_prices.loc[analysis_date, 'iShares 20+'] / treasury_prices.loc[inital_date, 'iShares 20+'] - 1,
     }
 
+    # Define the mapping of buckets to be used for aggregation
     bucket_mapping = {
         '<3m': '<1y',
         '3m-1y': '<1y',
@@ -49,6 +78,7 @@ def report_losses(inital_date,analysis_date,df_RMBS_Final, df_loans_first_lien_d
         'residential_mortgage_asset', 'other_loan_asset', 'core_asset', 'gross_asset', 'loss/core_asset', 'loss/gross_asset',
     ])
     
+    # Iterate over each row in gross_asset DataFrame
     for _, gross_row in gross_asset.iterrows():
         bank = gross_row['bank_name']
         bank_id = gross_row['Bank_ID']
@@ -94,9 +124,11 @@ def report_losses(inital_date,analysis_date,df_RMBS_Final, df_loans_first_lien_d
                     other_loan_loss += (asset_amount * price_change[treasury_bucket])
                     other_loan_asset += asset_amount
                 
+        # Calculate total loss and core asset
         total_loss = rmbs_loss + treasury_loss + loans_loss + other_loan_loss
         core_asset = rmbs_asset + treasury_asset + loan_asset + other_loan_asset
 
+        # Append the results to the DataFrame
         bank_losses_assets.loc[len(bank_losses_assets)] = {
             'bank_name': bank,
             'bank_ID': bank_id,
@@ -122,6 +154,16 @@ def report_losses(inital_date,analysis_date,df_RMBS_Final, df_loans_first_lien_d
     return bank_losses_assets
 
 def calculate_uninsured_deposit_mm_asset(uninsured_deposit, bank_losses):
+    """
+    Calculate the Uninsured Deposit/MM Asset ratio for each bank based on the provided data.
+
+    Parameters:
+    uninsured_deposit (DataFrame): DataFrame containing uninsured deposit data
+    bank_losses (DataFrame): DataFrame containing bank losses data
+
+    Returns:
+    DataFrame: A DataFrame containing the calculated Uninsured Deposit/MM Asset ratio for each bank
+    """
     
     # Initialize an empty list to store the results
     results = []
@@ -161,6 +203,17 @@ def calculate_uninsured_deposit_mm_asset(uninsured_deposit, bank_losses):
     return results_df
 
 def insured_deposit_coverage_ratio(insured_deposit, uninsured_deposit, bank_losses):
+    """
+    Calculate the insured deposit coverage ratio for each bank based on the provided data.
+
+    Parameters:
+    insured_deposit (DataFrame): DataFrame containing insured deposit data
+    uninsured_deposit (DataFrame): DataFrame containing uninsured deposit data
+    bank_losses (DataFrame): DataFrame containing bank losses data
+
+    Returns:
+    DataFrame: A DataFrame containing the calculated insured deposit coverage ratio for each bank
+    """
     # Initialize an empty list to store the results
     results = []
     
