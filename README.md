@@ -5,7 +5,7 @@ Final Project - Monetary Tightening and US Bank Fragility
 # About this project
 
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+This is our Team's Data Science Tool for Finance final project. In this project we attempt to replicate the results of Table 1 found in Monetary Tightening and US Bank Fragility in 2023: Mark-To-Market Losses and Uninsured Depositor Runs, written by Erica Xuewei Jiang, Gregor Matvos,Tomasz Piskorski, and Amit Seru.
 
 # Quick Start
 
