@@ -14,6 +14,21 @@ import platform
 OUTPUT_DIR = Path(config.OUTPUT_DIR)
 DATA_DIR = Path(config.DATA_DIR)
 
+# fmt: off
+## Helper functions for automatic execution of Jupyter notebooks
+def jupyter_execute_notebook(notebook):
+    return f"jupyter nbconvert --execute --to notebook --ClearMetadataPreprocessor.enabled=True --inplace ./src/{notebook}.ipynb"
+def jupyter_to_html(notebook, output_dir=OUTPUT_DIR):
+    return f"jupyter nbconvert --to html --output-dir={output_dir} ./src/{notebook}.ipynb"
+def jupyter_to_md(notebook, output_dir=OUTPUT_DIR):
+    """Requires jupytext"""
+    return f"jupytext --to markdown --output-dir={output_dir} ./src/{notebook}.ipynb"
+def jupyter_to_python(notebook, build_dir):
+    """Convert a notebook to a python script"""
+    return f"jupyter nbconvert --to python ./src/{notebook}.ipynb --output _{notebook}.py --output-dir {build_dir}"
+def jupyter_clear_output(notebook):
+    return f"jupyter nbconvert --ClearOutputPreprocessor.enabled=True --ClearMetadataPreprocessor.enabled=True --inplace ./src/{notebook}.ipynb"
+# fmt: on
 
 env_file = ".env"
 env_example_file = "env.example"
@@ -37,6 +52,16 @@ def get_os():
 
 os_type = get_os()
 
+def copy_notebook_to_folder(notebook_stem, origin_folder, destination_folder):
+    origin_path = Path(origin_folder) / f"{notebook_stem}.ipynb"
+    destination_folder = Path(destination_folder)
+    destination_folder.mkdir(parents=True, exist_ok=True)
+    destination_path = destination_folder / f"_{notebook_stem}.ipynb"
+    if os_type == "nix":
+        command = f"cp {origin_path} {destination_path}"
+    else:
+        command = f"copy  {origin_path} {destination_path}"
+    return command
 
 def task_pull_RCON_RCOA():
     """Pull RCON and RCOA from WRDS and save to disk
@@ -98,6 +123,79 @@ def task_extra_plot():
         "file_dep": file_dep,
         "clean": True,
     }
+
+def task_convert_notebooks_to_scripts():
+    """Preps the notebooks for presentation format.
+    Execute notebooks with summary stats and plots and remove metadata.
+    """
+    build_dir = Path(OUTPUT_DIR)
+    build_dir.mkdir(parents=True, exist_ok=True)
+
+    notebooks = [
+        "01_Final_Project_Exploration.ipynb",
+        "02_Final_Updated_Analysis.ipynb",
+        "03_data_construction_JR.ipynb",
+    ]
+    file_dep = [Path("./src") / file for file in notebooks]
+    stems = [notebook.split(".")[0] for notebook in notebooks]
+    targets = [build_dir / f"_{stem}.py" for stem in stems]
+
+    actions = [
+        # *[jupyter_execute_notebook(notebook) for notebook in notebooks_to_run],
+        # *[jupyter_to_html(notebook) for notebook in notebooks_to_run],
+        *[jupyter_clear_output(notebook) for notebook in stems],
+        *[jupyter_to_python(notebook, build_dir) for notebook in stems],
+    ]
+    return {
+        "actions": actions,
+        "targets": targets,
+        "task_dep": [],
+        "file_dep": file_dep,
+        "clean": True,
+    } 
+
+
+def task_run_notebooks():
+    """Preps the notebooks for presentation format.
+    Execute notebooks with summary stats and plots and remove metadata.
+    """
+    notebooks = [
+        "01_Final_Project_Exploration.ipynb",
+        "02_Final_Updated_Analysis.ipynb",
+        "03_data_construction_JR.ipynb",
+    ]
+    stems = [notebook.split(".")[0] for notebook in notebooks]
+
+    file_dep = [
+        # 'load_other_data.py',
+        *[Path(OUTPUT_DIR) / f"_{stem}.py" for stem in stems],
+    ]
+
+    targets = [
+        ## 01_example_notebook.ipynb output
+        ##OUTPUT_DIR / "sine_graph.png",
+        ## Notebooks converted to HTML
+        *[OUTPUT_DIR / f"{stem}.html" for stem in stems],
+    ]
+
+    actions = [
+        *[jupyter_execute_notebook(notebook) for notebook in stems],
+        *[jupyter_to_html(notebook) for notebook in stems],
+        *[copy_notebook_to_folder(notebook, Path("./src"), "./docs/_notebook_build/") for notebook in stems],
+        *[jupyter_clear_output(notebook) for notebook in stems],
+        # *[jupyter_to_python(notebook, build_dir) for notebook in notebooks_to_run],
+    ]
+    return {
+        "actions": actions,
+        "targets": targets,
+        "task_dep": [],
+        "file_dep": file_dep,
+        "clean": True,
+    }
+
+
+
+
 
 
 def task_compile_latex_docs():

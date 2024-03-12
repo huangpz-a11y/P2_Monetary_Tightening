@@ -13,12 +13,13 @@ warnings.filterwarnings("ignore")
 
 import config
 DATA_DIR = config.DATA_DIR
+BASE_DIR = config.BASE_DIR
 
 def process_sp_data(data_name,short_name):
     """
     Process the S&P data from the manual folder
     """
-    path = (DATA_DIR /'manual' / data_name)
+    path = (BASE_DIR / 'data' / 'manual' / data_name)
     # print(path)
     df = pd.read_excel(f'{path}.xlsx',skiprows=6)
     df = df.iloc[:-4]
