@@ -11,7 +11,7 @@ This is our Team's Data Science Tool for Finance final project. In this project 
 
 - Jason Wang - Main logic (table 1 and 2), WRDS data pulling automation and data cleaning, dodo.py (data pulling)
 - Peizhe Huang - Latex document generation and dodo.py (latex and jupyter notebook automations)
-- Maxwell Dender - Main logic (table 1 and 2), Data Exploration, Summary Statistics
+- Maxwell Dender - Main logic (table 1 and 2), Data Exploration, Summary Statistics, unit tests (alternative % cushion)
 - Juan Ramirez - Unit Tests, Jupyter Notebooks Data Exploration (01, 02, 03 notebooks)
 - Leon Tan - GSIB preliminary analysis
 
