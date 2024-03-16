@@ -65,6 +65,13 @@ This is our Team's Data Science Tool for Finance final project. In this project 
 - Description: FR Y-9C (Used for GSIB exploration)
 - Source: https://wrds-www.wharton.upenn.edu/pages/get-data/bank-regulatory/variable-metadata/variable-metadata/
 
+# Notes for Future Reference
+
+ - [] Insured deposits figures are far off
+ - [] Uninsured deposits are quite close, but there are big differences among GSIBs
+ - [] Would be nice to know what's in the "Share Other Loan" category.
+ - [] Too many data sets in the "manual" folder. These should be handled automatically.
+
 # Quick Start
 
 To quickest way to run code in this repo is to use the following steps. First, note that you must have TexLive installed on your computer and available in your path.
